@@ -56,22 +56,41 @@ void foo() {
    } // end of for
 }
 */
+#include <math.h>
+
+
+#define PREC 10
 
 int main( int argc, char **argv ) {
-   double width = 1024;
-   double height = 768;
+   double width = 500;
+   double height = 500;
    
-   double center_row = height/2.0;
-   double center_col = width/2.0;
-   double radius = 6.0;
+   double y0 = height/2.0;
+   double x0 = width/2.0;
+   double radius = 2.0;
 
-   double* pixels = calloc( height * width * sizeof(double) ); 
+   double scale = 1.0/PREC;
+   printf( "Scale is %f\n", scale );
+   printf( "The center is at %f, %f\n", x0, y0 ); 
+   printf( "Radius is %f\n", radius ); 
+   printf( "There will be %f points on the x-axis\n", ( PREC * width ) );  
+   printf( "There will be %f points on the y-axis\n", ( PREC * height ) );  
+   double* pixels = calloc( ( height * width * PREC * PREC ),  sizeof( double ) ); 
    
    // Write to pixels
-   for( double row = 0; row < height ; row++ ) {
-      for( double col = 0; col < width; col++ ) {
-         if 
+   for( double row = 0; row < height; row+=scale ) {
+      for( double col = 0; col < width; col+=scale ) {
+         double x_diff = col - x0;
+         double y_diff = row - y0;
+         double t_radius = sqrt( x_diff * x_diff + y_diff * y_diff );
+         //printf( "%f, %f: t_radius is %f\n", row, col, t_radius  ); 
+         if ( t_radius <= radius ) {
+            printf("\t%f, %f is %f away from the center: %f, %f (It's in the circle!)\n",
+               row, col, radius, x0, y0); 
+            int idx = ( int )( row * width + col );
+            pixels[ idx ] = 1.0;
+         }
       } 
    } 
-
+   printf("\n"); 
 }

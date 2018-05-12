@@ -6,5 +6,5 @@ include_directories( $CMAKE_SOURCE_DIR )
 
 add_executable( fibonacci_fractal fibonacci_fractal.c )
 
-target_link_libraries( fibonacci_fractal gsl gslcblas png z )
+target_link_libraries( fibonacci_fractal gsl gslcblas png z m )
 
