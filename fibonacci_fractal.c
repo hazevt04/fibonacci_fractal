@@ -6,13 +6,10 @@
 #include <png.h>
 #include <getopt.h>
 
-#define PREC 10
 
-// Let's let val be 687. MAIN COLOR is val/768
-#define OTHER_COLOR 1.0              
 #define MAIN_COLOR  0.0               
 
-// This takes the float value 'val', converts it to red, green & blue values, then
+// This takes the double value 'val', converts it to red, green & blue values, then
 // sets those values into the image memory buffer location pointed to by 'ptr'
 void set_rgb(png_byte *ptr, double val)
 {
@@ -34,7 +31,8 @@ void set_rgb(png_byte *ptr, double val)
    else {
       ptr[0] = offset; 
       ptr[1] = 255-offset; 
-      ptr[2] = 0;
+      //ptr[2] = 0;
+      ptr[2] = 255;
    }
 }
 
@@ -122,117 +120,14 @@ int write_image(char* filename, int width, int height, double *buffer, char* tit
 } // end of write_image()
 
 
-void gen_square( double* pixels, double width, double height ) {
-   
-   for( double row = 0; row < height; row++ ) {
-      for( double col = 0; col < width; col++ ) {
-         // Does a square
-         int idx = ( int )( row * width + col );
-         if ( 
-            ( row > 1250 ) && 
-            ( row < 3750 ) &&
-            ( col > 1250 ) && 
-            ( col < 3750 )
-         ) {
-            pixels[ idx ] = MAIN_COLOR;
-         } else {
-            pixels[ idx ] = OTHER_COLOR;
-         }
-      } // for double col
-   } // for double row
-
-} // end of gen_square()
+#define FRAC_POW 20
+#define SEG_POW 3
+#define FRACTAL_LEN (1UL<<FRAC_POW)
+#define SEG_LEN (1UL<<SEG_POW)
+#define FIB_WORD_LEN (1UL<<(FRAC_POW - SEG_POW))
+typedef enum { FORWARD, RIGHT, LEFT } direction_t;
 
 
-void gen_circle( double* pixels, double width, double height, 
-   double radius, double x0, double y0 
-   ) {
-   
-   // Write to pixels
-   for( double row = 0; row < height; row++ ) {
-      for( double col = 0; col < width; col++ ) {
-         double x_diff = col - x0;
-         double y_diff = row - y0;
-         double t_radius = sqrt( x_diff * x_diff + y_diff * y_diff );
-
-         int idx = ( int )( row * width + col );
-         if ( t_radius <= radius ) {
-            pixels[ idx ] = MAIN_COLOR;
-         } else {
-            pixels[ idx ] = OTHER_COLOR;
-         }
-      } // for col
-   } // for row
-
-} // end of gen_circle()
-
-
-static int verbose_flag;
-
-
-static struct option long_options[] = {
-   { "width", required_argument, NULL, 'w' },
-   { "height", required_argument, NULL, 'h' },
-   { "radius", required_argument, NULL, 'r' },
-   { "verbose", no_argument, &verbose_flag, 1 },
-   { 0, 0, 0, 0 }
-};   
-
-void usage( char* argv ) {
-   printf( "Usage %s <options>\n", argv );
-   printf( "width, w\n" );  
-   printf( "height, h\n" );  
-   printf( "radius, h\n" );  
-   printf( "verbose, v\n" );  
-}
-
-int main( int argc, char **argv ) {
-   double width = 0.0;
-   double height = 0.0;
-   double radius = 0.0;
-   char* endptr = NULL;
-
-   char ch;
-   while( (ch = getopt_long( argc, argv, "w:h:r:v", long_options, NULL )) != -1 ) {
-      switch( ch ) {
-         case 'w':
-            width = strtod( optarg, &endptr );
-            break;
-         case 'h':
-            height = strtod( optarg, &endptr );
-            break;
-         case 'r':
-            radius = strtod( optarg, &endptr );
-            break;
-         default:
-            printf( "ERROR: option %c invalid", ch );
-            usage( argv[0] ); 
-            break; 
-      }
-   }
-
-   double y0 = height/2.0;
-   double x0 = width/2.0;
-
-   printf( "The center is at %f, %f\n", x0, y0 ); 
-   printf( "Radius is %f\n", radius ); 
-   printf( "There will be %f points on the x-axis\n", ( width ) );  
-   printf( "There will be %f points on the y-axis\n", ( height ) );  
-   double* pixels = calloc( ( height * width ),  sizeof( double ) ); 
-   
-   gen_circle( pixels, width, height, radius, x0, y0 );
-
-   char filename[64];
-   char title[64];
-   strcpy( filename, "circle.png" );
-   strcpy( title, "Circle" );
-   printf( "Saving PNG...\n" ); 
-   write_image( filename, width, height, pixels, title );
-   printf( "DONE. Result is in %s\n", filename ); 
-}
-
-
-/*
 // Fibonacci Word a specific infinite sequence in a two-letter alphabet.
 // Let f1 be "1" and f2 be "0".
 // fn = fn-1fn-2, the concatenaton of the two previous terms
@@ -245,16 +140,9 @@ int main( int argc, char **argv ) {
 // f6 = 01001010
 // f7 = 0100101001001
 // ...
-#define FRAC_POW 20
-#define SEG_POW 3
-#define FRACTAL_LEN (1UL<<FRAC_POW)
-#define SEG_LEN (1UL<<SEG_POW)
-#define FIB_WORD_LEN (1UL<<(FRAC_POW - SEG_POW))
-typedef enum { FORWARD, RIGHT, LEFT } direction_t;
-*/
-/*
 void gen_fractal_word( char* fractal, int num_fractal_letters ) {
 }
+
 
 void draw_segment( char* fractal, int* start_pos, direction_t direction ) {
    if ( direction == FORWARD ) {
@@ -262,13 +150,11 @@ void draw_segment( char* fractal, int* start_pos, direction_t direction ) {
    } else if ( direction == LEFT ) {
    }
 }
-*/
 
-/*
-void foo() {
+void gen_fractal() {
    char wordchar[FIB_WORD_LEN];
    char fractal[FRACTAL_LEN];
-int start_pos = 0;
+   int start_pos = 0;
    // The Fibonacci word may be represented as a fractal 
    // For F_wordm start with F_wordCharn=1
    //    Draw a segment forward
@@ -286,5 +172,65 @@ int start_pos = 0;
       } // end of if wordchar
    } // end of for
 }
-*/
+
+static int verbose_flag;
+
+static struct option long_options[] = {
+   { "width", required_argument, NULL, 'w' },
+   { "height", required_argument, NULL, 'h' },
+   { "radius", required_argument, NULL, 'r' },
+   { "verbose", no_argument, &verbose_flag, 1 },
+   { 0, 0, 0, 0 }
+};   
+
+void usage( char* argv ) {
+   printf( "Usage %s <options>\n", argv );
+   printf( "width, w\n" );  
+   printf( "height, h\n" );  
+   printf( "radius, h\n" );  
+   printf( "verbose, v\n" );  
+}
+
+
+int main( int argc, char **argv ) {
+   double width = 0.0;
+   double height = 0.0;
+   double radius = 0.0;
+   char* endptr = NULL;
+
+   char ch;
+   while( (ch = getopt_long( argc, argv, "w:h:v", long_options, NULL )) != -1 ) {
+      switch( ch ) {
+         case 'w':
+            width = strtod( optarg, &endptr );
+            break;
+         case 'h':
+            height = strtod( optarg, &endptr );
+            break;
+         default:
+            printf( "ERROR: option %c invalid", ch );
+            usage( argv[0] ); 
+            break; 
+      }
+   }
+
+   printf( "There will be %f points on the x-axis\n", ( width ) );  
+   printf( "There will be %f points on the y-axis\n", ( height ) );  
+   double* pixels = calloc( ( height * width ),  sizeof( double ) ); 
+   
+
+   char filename[64];
+   char title[64];
+   strcpy( filename, "circle.png" );
+   strcpy( title, "Circle" );
+   printf( "Saving PNG...\n" ); 
+   write_image( filename, width, height, pixels, title );
+   printf( "DONE. Result is in %s\n", filename ); 
+   
+   free( pixels );
+   return 0;
+}
+
+
+
 
