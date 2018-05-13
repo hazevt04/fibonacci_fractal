@@ -4,11 +4,13 @@
 #include <string.h>
 #include <math.h>
 #include <png.h>
+#include <getopt.h>
 
 #define PREC 10
+
 // Let's let val be 687. MAIN COLOR is val/768
-#define OTHER_COLOR 0.254              
-#define MAIN_COLOR  0.875               
+#define OTHER_COLOR 1.0              
+#define MAIN_COLOR  0.0               
 
 // This takes the float value 'val', converts it to red, green & blue values, then
 // sets those values into the image memory buffer location pointed to by 'ptr'
@@ -120,25 +122,10 @@ int write_image(char* filename, int width, int height, double *buffer, char* tit
 } // end of write_image()
 
 
-
-int main( int argc, char **argv ) {
-   double width = 5000;
-   double height = 5000;
+void gen_square( double* pixels, double width, double height ) {
    
-   double y0 = height/2.0;
-   double x0 = width/2.0;
-   double radius = 400.0;
-
-   printf( "The center is at %f, %f\n", x0, y0 ); 
-   printf( "Radius is %f\n", radius ); 
-   printf( "There will be %f points on the x-axis\n", ( width ) );  
-   printf( "There will be %f points on the y-axis\n", ( height ) );  
-   double* pixels = calloc( ( height * width ),  sizeof( double ) ); 
-   
-   // Write to pixels
    for( double row = 0; row < height; row++ ) {
       for( double col = 0; col < width; col++ ) {
-         /*
          // Does a square
          int idx = ( int )( row * width + col );
          if ( 
@@ -151,23 +138,89 @@ int main( int argc, char **argv ) {
          } else {
             pixels[ idx ] = OTHER_COLOR;
          }
-         */
+      } // for double col
+   } // for double row
+
+} // end of gen_square()
+
+
+void gen_circle( double* pixels, double width, double height, 
+   double radius, double x0, double y0 
+   ) {
+   
+   // Write to pixels
+   for( double row = 0; row < height; row++ ) {
+      for( double col = 0; col < width; col++ ) {
          double x_diff = col - x0;
          double y_diff = row - y0;
          double t_radius = sqrt( x_diff * x_diff + y_diff * y_diff );
 
-         //printf( "%f, %f: t_radius is %f\n", row, col, t_radius  ); 
          int idx = ( int )( row * width + col );
          if ( t_radius <= radius ) {
-            //printf("\t%f, %f is %f away from the center: %f, %f (It's in the circle!)\n",
-            //   row, col, radius, x0, y0); 
             pixels[ idx ] = MAIN_COLOR;
          } else {
             pixels[ idx ] = OTHER_COLOR;
          }
-      } 
-   } 
-   printf("\n"); 
+      } // for col
+   } // for row
+
+} // end of gen_circle()
+
+
+static int verbose_flag;
+
+
+static struct option long_options[] = {
+   { "width", required_argument, NULL, 'w' },
+   { "height", required_argument, NULL, 'h' },
+   { "radius", required_argument, NULL, 'r' },
+   { "verbose", no_argument, &verbose_flag, 1 },
+   { 0, 0, 0, 0 }
+};   
+
+void usage( char* argv ) {
+   printf( "Usage %s <options>\n", argv );
+   printf( "width, w\n" );  
+   printf( "height, h\n" );  
+   printf( "radius, h\n" );  
+   printf( "verbose, v\n" );  
+}
+
+int main( int argc, char **argv ) {
+   double width = 0.0;
+   double height = 0.0;
+   double radius = 0.0;
+   char* endptr = NULL;
+
+   char ch;
+   while( (ch = getopt_long( argc, argv, "w:h:r:v", long_options, NULL )) != -1 ) {
+      switch( ch ) {
+         case 'w':
+            width = strtod( optarg, &endptr );
+            break;
+         case 'h':
+            height = strtod( optarg, &endptr );
+            break;
+         case 'r':
+            radius = strtod( optarg, &endptr );
+            break;
+         default:
+            printf( "ERROR: option %c invalid", ch );
+            usage( argv[0] ); 
+            break; 
+      }
+   }
+
+   double y0 = height/2.0;
+   double x0 = width/2.0;
+
+   printf( "The center is at %f, %f\n", x0, y0 ); 
+   printf( "Radius is %f\n", radius ); 
+   printf( "There will be %f points on the x-axis\n", ( width ) );  
+   printf( "There will be %f points on the y-axis\n", ( height ) );  
+   double* pixels = calloc( ( height * width ),  sizeof( double ) ); 
+   
+   gen_circle( pixels, width, height, radius, x0, y0 );
 
    char filename[64];
    char title[64];
