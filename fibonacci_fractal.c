@@ -191,8 +191,9 @@ int main( int argc, char **argv ) {
    char* endptr = NULL;
 
 	int option_index = 0;
+	verbose_flag = 0;
    char ch;
-   while( (ch = getopt_long( argc, argv, ":vn:", long_options, &option_index )) != -1 ) {
+   while( (ch = getopt_long( argc, argv, "vn:", long_options, &option_index )) != -1 ) {
       switch( ch ) {
    		case 0:
             // For verbose flag
@@ -200,6 +201,9 @@ int main( int argc, char **argv ) {
             if ( long_options[option_index].flag != 0 ) {
                break;
             }
+				break;
+			case 'v':
+				verbose_flag = 1;
 				break;
          case 'n':
             num_iterations = strtod( optarg, &endptr );
