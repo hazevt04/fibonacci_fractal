@@ -119,19 +119,29 @@ int write_image(char* filename, int width, int height, double *buffer, char* tit
 
 
 #define VERBOSE_PRINTF(fmt, ...) { \
-         if ( verbose_flag ) { \
-            printf(fmt, ##__VA_ARGS__); \
-         } \
-      }
+	if ( verbose_flag ) { \
+   	printf(fmt, ##__VA_ARGS__); \
+   } \
+}
 
 
+#define CHECK_NULL_PTR(ptr) { \
+	if (!ptr) { \
+		fprintf( stderr, "File %s, Line %d in %s(): ERROR: " #ptr \
+			" is NULL! malloc failed?\n", \
+			__FILE__, __LINE__, __func__ ); \
+		exit(EXIT_FAILURE); \
+	} \
+}
+
+/*
 const int fib_numbers[16] = { 
 	   1,    1,    2,    3, 
 	   5,    8,   13,   21, 
      34,   55,   89,  144, 
     233,  377,  610,  987 
 };
-
+*/
 
 // Let f1 be "1" and f2 be "0".
 // fn = fn-1fn-2, the concatenaton of the two previous terms
@@ -152,15 +162,20 @@ const int fib_numbers[16] = {
 static int verbose_flag;
 
 static struct option long_options[] = {
-   { "num_iterations", required_argument, NULL, 'n' },
    { "verbose", no_argument, &verbose_flag, 1 },
+   { "num_iterations", required_argument, NULL, 'n' },
    { 0, 0, 0, 0 }
 };   
 
 void usage( char* argv ) {
    printf( "Usage %s <options>\n", argv );
-   printf( "num_iterations, n\n" );  
-   printf( "verbose, v\n" );  
+	printf( "Options one of:\n" );
+   printf( "%20s%4s%56s", 
+		"--verbose", "-v", 
+		"Verbose output\n\n" );  
+   printf( "%20s%4s%56s", 
+		"--num_iterations", "-n", 
+		"Number of iterations for the Fibonacci fractal\n" );  
 }
 
 int fib_recursive( int n ) {
@@ -175,34 +190,57 @@ int main( int argc, char **argv ) {
    int num_iterations = 1;
    char* endptr = NULL;
 
+	int option_index = 0;
    char ch;
-   while( (ch = getopt_long( argc, argv, "n:v", long_options, NULL )) != -1 ) {
+   while( (ch = getopt_long( argc, argv, ":vn:", long_options, &option_index )) != -1 ) {
       switch( ch ) {
+   		case 0:
+            // For verbose flag
+            // There is no argument after the flag in this case
+            if ( long_options[option_index].flag != 0 ) {
+               break;
+            }
+				break;
          case 'n':
             num_iterations = strtod( optarg, &endptr );
             break;
          default:
-            printf( "ERROR: option %c invalid", ch );
+            printf( "ERROR: option %c invalid\n", ch );
             usage( argv[0] ); 
-            break; 
+				exit(EXIT_FAILURE);
       }
    }
 
    VERBOSE_PRINTF( "num_iterations set to %d \n", num_iterations );  
    
-	char* fib_word = malloc(1);
+	int num_chars = fib_recursive( num_iterations );
+	char** fib_words = malloc(num_iterations * sizeof(char*));
 
-	int result = fib_recursive( num_iterations );
-	
-	if ( fib_numbers[num_iterations] != result ) {
-		printf( "Fibonacci number %d was %d. That is wrong. It should be %d.\n", 
-			num_iterations, result, fib_numbers[num_iterations] );
-	} else {
-		printf( "Fibonacci number %d is %d\n", num_iterations, result );
+	CHECK_NULL_PTR( fib_words );
+
+	for( int index = 0; index < num_iterations; index++ ) {
+		int fib_word_len = fib_recursive( index );
+		VERBOSE_PRINTF( "fib_word_len %d is %d\n", index, fib_word_len );
+		fib_words[ index ] = calloc( ( fib_word_len + 1 ), sizeof(char) );
+		CHECK_NULL_PTR( fib_words[ index ] );
 	}
+   
+	strcpy( fib_words[0], "1" );
+	printf( "fib_words[%3d] is %s\n", 0, fib_words[ 0 ] );
+	strcpy( fib_words[1], "0" );
+	printf( "fib_words[%3d] is %s\n", 1, fib_words[ 1 ] );
+	for( int index = 2; index < num_iterations; index++ ) {
+		strcat( fib_words[ index ], fib_words[ index - 1 ] );
+		strcat( fib_words[ index ], fib_words[ index - 2 ] );
+		printf( "fib_words[%3d] is %s\n", index, fib_words[ index ] );
+	}
+	printf( "\n" );
 
-	free(fib_word);
-   return 0;
+	for( int index = 0; index < num_iterations; index++ ) {
+		free( fib_words[ index ] );
+	}
+	free( fib_words );
+   exit(EXIT_SUCCESS);
 }
 
 
