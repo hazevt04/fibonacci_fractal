@@ -7,8 +7,6 @@
 #include <getopt.h>
 
 
-#define MAIN_COLOR  0.0               
-
 // This takes the double value 'val', converts it to red, green & blue values, then
 // sets those values into the image memory buffer location pointed to by 'ptr'
 void set_rgb(png_byte *ptr, double val)
@@ -120,15 +118,21 @@ int write_image(char* filename, int width, int height, double *buffer, char* tit
 } // end of write_image()
 
 
-#define FRAC_POW 20
-#define SEG_POW 3
-#define FRACTAL_LEN (1UL<<FRAC_POW)
-#define SEG_LEN (1UL<<SEG_POW)
-#define FIB_WORD_LEN (1UL<<(FRAC_POW - SEG_POW))
-typedef enum { FORWARD, RIGHT, LEFT } direction_t;
+#define VERBOSE_PRINTF(fmt, ...) { \
+         if ( verbose_flag ) { \
+            printf(fmt, ##__VA_ARGS__); \
+         } \
+      }
 
 
-// Fibonacci Word a specific infinite sequence in a two-letter alphabet.
+const int fib_numbers[16] = { 
+	   1,    1,    2,    3, 
+	   5,    8,   13,   21, 
+     34,   55,   89,  144, 
+    233,  377,  610,  987 
+};
+
+
 // Let f1 be "1" and f2 be "0".
 // fn = fn-1fn-2, the concatenaton of the two previous terms
 // 0 -> 01, 1->0, f1 = 1
@@ -140,72 +144,42 @@ typedef enum { FORWARD, RIGHT, LEFT } direction_t;
 // f6 = 01001010
 // f7 = 0100101001001
 // ...
-void gen_fractal_word( char* fractal, int num_fractal_letters ) {
-}
+//void gen_fractal_word( char* fractal, int num_iterations ) {
+//	
+//}
 
-
-void draw_segment( char* fractal, int* start_pos, direction_t direction ) {
-   if ( direction == FORWARD ) {
-   } else if ( direction == RIGHT ) {
-   } else if ( direction == LEFT ) {
-   }
-}
-
-void gen_fractal() {
-   char wordchar[FIB_WORD_LEN];
-   char fractal[FRACTAL_LEN];
-   int start_pos = 0;
-   // The Fibonacci word may be represented as a fractal 
-   // For F_wordm start with F_wordCharn=1
-   //    Draw a segment forward
-   //    If current F_wordChar is 0
-   //       Turn left if n is even
-   //       Turn right if n is odd
-   //    next n and iterate until end of F_word
-   // initial guess:
-   for( int wordchar = 0; wordchar < FIB_WORD_LEN; wordchar++ ) {
-      // draw a segment forward
-      draw_segment( fractal, &start_pos, FORWARD );
-      if ( word[wordchar] == '0') {
-         direction = ( wordchar & 0x1 ) ? RIGHT : LEFT;
-         draw_segment( fractal, &start_pos, direction );
-      } // end of if wordchar
-   } // end of for
-}
 
 static int verbose_flag;
 
 static struct option long_options[] = {
-   { "width", required_argument, NULL, 'w' },
-   { "height", required_argument, NULL, 'h' },
-   { "radius", required_argument, NULL, 'r' },
+   { "num_iterations", required_argument, NULL, 'n' },
    { "verbose", no_argument, &verbose_flag, 1 },
    { 0, 0, 0, 0 }
 };   
 
 void usage( char* argv ) {
    printf( "Usage %s <options>\n", argv );
-   printf( "width, w\n" );  
-   printf( "height, h\n" );  
-   printf( "radius, h\n" );  
+   printf( "num_iterations, n\n" );  
    printf( "verbose, v\n" );  
 }
 
+int fib_recursive( int n ) {
+	if ( n < 2 ) {
+		return 1;	
+	} else {
+		return fib_recursive( n - 1 ) + fib_recursive( n - 2 );
+	}	
+}
 
 int main( int argc, char **argv ) {
-   double width = 0.0;
-   double height = 0.0;
-   double radius = 0.0;
+   int num_iterations = 1;
    char* endptr = NULL;
 
    char ch;
-   while( (ch = getopt_long( argc, argv, "w:h:v", long_options, NULL )) != -1 ) {
+   while( (ch = getopt_long( argc, argv, "n:v", long_options, NULL )) != -1 ) {
       switch( ch ) {
-         case 'w':
-            width = strtod( optarg, &endptr );
-            break;
-         case 'h':
-            height = strtod( optarg, &endptr );
+         case 'n':
+            num_iterations = strtod( optarg, &endptr );
             break;
          default:
             printf( "ERROR: option %c invalid", ch );
@@ -214,20 +188,20 @@ int main( int argc, char **argv ) {
       }
    }
 
-   printf( "There will be %f points on the x-axis\n", ( width ) );  
-   printf( "There will be %f points on the y-axis\n", ( height ) );  
-   double* pixels = calloc( ( height * width ),  sizeof( double ) ); 
+   VERBOSE_PRINTF( "num_iterations set to %d \n", num_iterations );  
    
+	char* fib_word = malloc(1);
 
-   char filename[64];
-   char title[64];
-   strcpy( filename, "circle.png" );
-   strcpy( title, "Circle" );
-   printf( "Saving PNG...\n" ); 
-   write_image( filename, width, height, pixels, title );
-   printf( "DONE. Result is in %s\n", filename ); 
-   
-   free( pixels );
+	int result = fib_recursive( num_iterations );
+	
+	if ( fib_numbers[num_iterations] != result ) {
+		printf( "Fibonacci number %d was %d. That is wrong. It should be %d.\n", 
+			num_iterations, result, fib_numbers[num_iterations] );
+	} else {
+		printf( "Fibonacci number %d is %d\n", num_iterations, result );
+	}
+
+	free(fib_word);
    return 0;
 }
 
