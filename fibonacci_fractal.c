@@ -1,42 +1,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <string.h>
 #include <math.h>
 #include <png.h>
 #include <getopt.h>
 
 
-// This takes the double value 'val', converts it to red, green & blue values, then
-// sets those values into the image memory buffer location pointed to by 'ptr'
-void set_rgb(png_byte *ptr, double val)
-{
-   int v = (int)(val * 767);
-   if (v < 0) v = 0;
-   if (v > 767) v = 767;
-   int offset = v % 256;
 
-   if (v<256) {
-      ptr[0] = 0; 
-      ptr[1] = 0; 
-      ptr[2] = offset;
-   }
-   else if (v<512) {
-      ptr[0] = 0; 
-      ptr[1] = offset; 
-      ptr[2] = 255-offset;
-   }
-   else {
-      ptr[0] = offset; 
-      ptr[1] = 255-offset; 
-      //ptr[2] = 0;
-      ptr[2] = 255;
-   }
+// Let's let val be 687. MAIN COLOR is val/768
+// This takes the float value 'val', converts it to red, green & blue values, then
+// sets those values into the image memory buffer location pointed to by 'ptr'
+void set_rgb(png_byte *ptr, uint32_t val )
+{
+   ptr[0] = ( val >> 16 ) & 0xFFUL;
+   ptr[1] = ( val >> 8 ) & 0xFFUL;
+   ptr[2] = ( val ) & 0xFFUL;
 }
+
 
 // This function actually writes out the PNG image file. The string 'title' is
 // also written into the image file
-int write_image(char* filename, int width, int height, double *buffer, char* title)
+int write_image(char* filename, int width, int height, uint32_t* buffer, char* title)
 {
    int code = 0;
    FILE *fp = NULL;
@@ -158,6 +144,19 @@ const int fib_numbers[16] = {
 //	
 //}
 
+#define THICKNESS 5
+
+void draw_segment_forward( uint32_t* pixels, double width, double height, int x0, int y0, int length, uint32_t color, int prev_dir ) {
+	
+	for ( int y_index = y0; y_index < ( y0 + THICKNESS ); y_index++ ) {
+		int init_index = (int)( y_index * width + x0 );
+		int last_index = (int)( init_index + length );
+		for ( int index = init_index; index < last_index; index++ ) {
+			pixels[ index ] = color;
+		}
+	}
+	
+}
 
 static int verbose_flag;
 
@@ -222,28 +221,69 @@ int main( int argc, char **argv ) {
 
 	CHECK_NULL_PTR( fib_words );
 
+	int fib_word_len = 1;
 	for( int index = 0; index < num_iterations; index++ ) {
-		int fib_word_len = fib_recursive( index );
+		fib_word_len = fib_recursive( index );
 		VERBOSE_PRINTF( "fib_word_len %d is %d\n", index, fib_word_len );
 		fib_words[ index ] = calloc( ( fib_word_len + 1 ), sizeof(char) );
 		CHECK_NULL_PTR( fib_words[ index ] );
 	}
    
 	strcpy( fib_words[0], "1" );
-	printf( "fib_words[%3d] is %s\n", 0, fib_words[ 0 ] );
+	//printf( "fib_words[%3d] is %s\n", 0, fib_words[ 0 ] );
 	strcpy( fib_words[1], "0" );
-	printf( "fib_words[%3d] is %s\n", 1, fib_words[ 1 ] );
+	//printf( "fib_words[%3d] is %s\n", 1, fib_words[ 1 ] );
 	for( int index = 2; index < num_iterations; index++ ) {
 		strcat( fib_words[ index ], fib_words[ index - 1 ] );
 		strcat( fib_words[ index ], fib_words[ index - 2 ] );
-		printf( "fib_words[%3d] is %s\n", index, fib_words[ index ] );
+		//printf( "fib_words[%3d] is %s\n", index, fib_words[ index ] );
 	}
 	printf( "\n" );
+
+	printf( "fib_word is %s\n", fib_words[ num_iterations - 1 ] );
+	for( int index = 0; index < fib_word_len; index++ ) {
+		printf( "Go Forward-" );
+		if ( fib_words[ num_iterations - 1 ][ index ] == '0' ) {	
+			if ( index & 1 ) {
+				printf( "Go Right" );
+			} else {
+				printf( "Go Left" );
+			}
+		}
+		printf( "\n" );
+	} // end of for loop
+   
+	char title[64];
+   strcpy( title, "FibFractal" );
+ 	
+	char outfile[64];
+	strcpy( outfile, "fib_fractal.png" );
+ 	double width = 1000.0;
+	double height = 1000.0;
+	int x0 = 50;
+	int y0 = 50;
+	int length = 20;
+	uint32_t black = 0;
+	uint32_t white = 0xffffff;
+	uint32_t color = 0;	
+	int prev_dir = 0;
+	uint32_t* pixels = malloc( width * height * sizeof(uint32_t) );
+	CHECK_NULL_PTR( pixels );
+	for ( int index = 0; index < width * height; index++ ) {
+		pixels[ index ] = white;
+	}
+
+	draw_segment_forward( pixels, width, height, x0, y0, length, black, prev_dir );	
+
+   printf( "Saving PNG to %s...\n", outfile );
+   write_image( outfile, width, height, pixels, title );
+   printf( "DONE.\n\n" );
 
 	for( int index = 0; index < num_iterations; index++ ) {
 		free( fib_words[ index ] );
 	}
 	free( fib_words );
+	free( pixels );
    exit(EXIT_SUCCESS);
 }
 
