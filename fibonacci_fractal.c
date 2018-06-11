@@ -9,6 +9,7 @@
 
 
 
+
 // Let's let val be 687. MAIN COLOR is val/768
 // This takes the float value 'val', converts it to red, green & blue values, then
 // sets those values into the image memory buffer location pointed to by 'ptr'
@@ -161,7 +162,7 @@ void draw_segment_forward( uint32_t* pixels, double width, double height, int x0
 static int verbose_flag;
 
 static struct option long_options[] = {
-   { "verbose", no_argument, &verbose_flag, 1 },
+   { "verbose", no_argument, NULL, 'v' },
    { "num_iterations", required_argument, NULL, 'n' },
    { 0, 0, 0, 0 }
 };   
@@ -191,8 +192,8 @@ int main( int argc, char **argv ) {
 
 	int option_index = 0;
 	verbose_flag = 0;
-   char ch;
-   while( (ch = getopt_long( argc, argv, "vn:", long_options, &option_index )) != -1 ) {
+   signed char ch;
+   while( (ch = (signed char)getopt_long( argc, argv, "vn:", long_options, &option_index )) != -1 ) {
       switch( ch ) {
    		case 0:
             // For verbose flag
@@ -208,10 +209,10 @@ int main( int argc, char **argv ) {
             num_iterations = strtod( optarg, &endptr );
             break;
          default:
-            printf( "ERROR: option %c invalid\n", ch );
-            usage( argv[0] ); 
-				exit(EXIT_FAILURE);
+            printf( "ERROR: option %c (%d) invalid\n", ch, ch );
+            break;
       }
+
    }
 
    VERBOSE_PRINTF( "num_iterations set to %d \n", num_iterations );  
