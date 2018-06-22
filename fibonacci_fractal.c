@@ -106,25 +106,25 @@ int write_image(char* filename, int width, int height, uint32_t* buffer, char* t
 
 
 #define VERBOSE_PRINTF(fmt, ...) { \
-	if ( verbose_flag ) { \
-   	printf(fmt, ##__VA_ARGS__); \
+   if ( verbose_flag ) { \
+      printf(fmt, ##__VA_ARGS__); \
    } \
 }
 
 
 #define CHECK_NULL_PTR(ptr) { \
-	if (!ptr) { \
-		fprintf( stderr, "File %s, Line %d in %s(): ERROR: " #ptr \
-			" is NULL! malloc failed?\n", \
-			__FILE__, __LINE__, __func__ ); \
-		exit(EXIT_FAILURE); \
-	} \
+   if (!ptr) { \
+      fprintf( stderr, "File %s, Line %d in %s(): ERROR: " #ptr \
+         " is NULL! malloc failed?\n", \
+         __FILE__, __LINE__, __func__ ); \
+      exit(EXIT_FAILURE); \
+   } \
 }
 
 /*
 const int fib_numbers[16] = { 
-	   1,    1,    2,    3, 
-	   5,    8,   13,   21, 
+      1,    1,    2,    3, 
+      5,    8,   13,   21, 
      34,   55,   89,  144, 
     233,  377,  610,  987 
 };
@@ -142,21 +142,21 @@ const int fib_numbers[16] = {
 // f7 = 0100101001001
 // ...
 //void gen_fractal_word( char* fractal, int num_iterations ) {
-//	
+//   
 //}
 
 #define THICKNESS 5
 
 void draw_segment_forward( uint32_t* pixels, double width, double height, int x0, int y0, int length, uint32_t color, int prev_dir ) {
-	
-	for ( int y_index = y0; y_index < ( y0 + THICKNESS ); y_index++ ) {
-		int init_index = (int)( y_index * width + x0 );
-		int last_index = (int)( init_index + length );
-		for ( int index = init_index; index < last_index; index++ ) {
-			pixels[ index ] = color;
-		}
-	}
-	
+   
+   for ( int y_index = y0; y_index < ( y0 + THICKNESS ); y_index++ ) {
+      int init_index = (int)( y_index * width + x0 );
+      int last_index = (int)( init_index + length );
+      for ( int index = init_index; index < last_index; index++ ) {
+         pixels[ index ] = color;
+      }
+   }
+   
 }
 
 static int verbose_flag;
@@ -169,122 +169,124 @@ static struct option long_options[] = {
 
 void usage( char* argv ) {
    printf( "Usage %s <options>\n", argv );
-	printf( "Options one of:\n" );
+   printf( "Options one of:\n" );
    printf( "%20s%4s%56s", 
-		"--verbose", "-v", 
-		"Verbose output\n\n" );  
+      "--verbose", "-v", 
+      "Verbose output\n\n" );  
    printf( "%20s%4s%56s", 
-		"--num_iterations", "-n", 
-		"Number of iterations for the Fibonacci fractal\n" );  
+      "--num_iterations", "-n", 
+      "Number of iterations for the Fibonacci fractal\n" );  
 }
 
 int fib_recursive( int n ) {
-	if ( n < 2 ) {
-		return 1;	
-	} else {
-		return fib_recursive( n - 1 ) + fib_recursive( n - 2 );
-	}	
+   if ( n < 2 ) {
+      return 1;   
+   } else {
+      return fib_recursive( n - 1 ) + fib_recursive( n - 2 );
+   }   
 }
 
 int main( int argc, char **argv ) {
    int num_iterations = 1;
    char* endptr = NULL;
 
-	int option_index = 0;
-	verbose_flag = 0;
-   signed char ch;
-   while( (ch = (signed char)getopt_long( argc, argv, "vn:", long_options, &option_index )) != -1 ) {
+   int option_index = 0;
+   verbose_flag = 0;
+   int ch = getopt_long( argc, argv, "vn:", long_options, &option_index );
+   while( ch != -1 ) {
       switch( ch ) {
-   		case 0:
+         case 0:
             // For verbose flag
             // There is no argument after the flag in this case
             if ( long_options[option_index].flag != 0 ) {
                break;
             }
-				break;
-			case 'v':
-				verbose_flag = 1;
-				break;
+            break;
+         case 'v':
+            verbose_flag = 1;
+            break;
          case 'n':
             num_iterations = strtod( optarg, &endptr );
             break;
          default:
             printf( "ERROR: option %c (%d) invalid\n", ch, ch );
             break;
-      }
-
+      } // end of switch
+      
+      ch = getopt_long( argc, argv, "vn:", long_options, &option_index );
    }
 
    VERBOSE_PRINTF( "num_iterations set to %d \n", num_iterations );  
    
-	int num_chars = fib_recursive( num_iterations );
-	char** fib_words = malloc(num_iterations * sizeof(char*));
+   int num_chars = fib_recursive( num_iterations );
+   char** fib_words = malloc(num_iterations * sizeof(char*));
 
-	CHECK_NULL_PTR( fib_words );
+   CHECK_NULL_PTR( fib_words );
 
-	int fib_word_len = 1;
-	for( int index = 0; index < num_iterations; index++ ) {
-		fib_word_len = fib_recursive( index );
-		VERBOSE_PRINTF( "fib_word_len %d is %d\n", index, fib_word_len );
-		fib_words[ index ] = calloc( ( fib_word_len + 1 ), sizeof(char) );
-		CHECK_NULL_PTR( fib_words[ index ] );
-	}
+   int fib_word_len = 1;
+   for( int index = 0; index < num_iterations; index++ ) {
+      fib_word_len = fib_recursive( index );
+      VERBOSE_PRINTF( "fib_word_len %d is %d\n", index, fib_word_len );
+      fib_words[ index ] = calloc( ( fib_word_len + 1 ), sizeof(char) );
+      CHECK_NULL_PTR( fib_words[ index ] );
+   }
    
-	strcpy( fib_words[0], "1" );
-	//printf( "fib_words[%3d] is %s\n", 0, fib_words[ 0 ] );
-	strcpy( fib_words[1], "0" );
-	//printf( "fib_words[%3d] is %s\n", 1, fib_words[ 1 ] );
-	for( int index = 2; index < num_iterations; index++ ) {
-		strcat( fib_words[ index ], fib_words[ index - 1 ] );
-		strcat( fib_words[ index ], fib_words[ index - 2 ] );
-		//printf( "fib_words[%3d] is %s\n", index, fib_words[ index ] );
-	}
-	printf( "\n" );
+ 
+   strcpy( fib_words[0], "1" );
+   //printf( "fib_words[%3d] is %s\n", 0, fib_words[ 0 ] );
+   strcpy( fib_words[1], "0" );
+   //printf( "fib_words[%3d] is %s\n", 1, fib_words[ 1 ] );
+   for( int index = 2; index < num_iterations; index++ ) {
+      strcat( fib_words[ index ], fib_words[ index - 1 ] );
+      strcat( fib_words[ index ], fib_words[ index - 2 ] );
+      //printf( "fib_words[%3d] is %s\n", index, fib_words[ index ] );
+   }
+   printf( "\n" );
 
-	printf( "fib_word is %s\n", fib_words[ num_iterations - 1 ] );
-	for( int index = 0; index < fib_word_len; index++ ) {
-		printf( "Go Forward-" );
-		if ( fib_words[ num_iterations - 1 ][ index ] == '0' ) {	
-			if ( index & 1 ) {
-				printf( "Go Right" );
-			} else {
-				printf( "Go Left" );
-			}
-		}
-		printf( "\n" );
-	} // end of for loop
+   printf( "fib_word is %s\n", fib_words[ num_iterations - 1 ] );
+   for( int index = 0; index < fib_word_len; index++ ) {
+      printf( "Go Forward-" );
+      if ( fib_words[ num_iterations - 1 ][ index ] == '0' ) {   
+         if ( index & 1 ) {
+            printf( "Go Right" );
+         } else {
+            printf( "Go Left" );
+         }
+      }
+      printf( "\n" );
+   } // end of for loop
    
-	char title[64];
+   char title[64];
    strcpy( title, "FibFractal" );
- 	
-	char outfile[64];
-	strcpy( outfile, "fib_fractal.png" );
- 	double width = 1000.0;
-	double height = 1000.0;
-	int x0 = 50;
-	int y0 = 50;
-	int length = 20;
-	uint32_t black = 0;
-	uint32_t white = 0xffffff;
-	uint32_t color = 0;	
-	int prev_dir = 0;
-	uint32_t* pixels = malloc( width * height * sizeof(uint32_t) );
-	CHECK_NULL_PTR( pixels );
-	for ( int index = 0; index < width * height; index++ ) {
-		pixels[ index ] = white;
-	}
+    
+   char outfile[64];
+   strcpy( outfile, "fib_fractal.png" );
+   double width = 1000.0;
+   double height = 1000.0;
+   int x0 = 50;
+   int y0 = 50;
+   int length = 20;
+   uint32_t black = 0;
+   uint32_t white = 0xffffff;
+   uint32_t color = 0;   
+   int prev_dir = 0;
+   uint32_t* pixels = malloc( width * height * sizeof(uint32_t) );
+   CHECK_NULL_PTR( pixels );
+   for ( int index = 0; index < width * height; index++ ) {
+      pixels[ index ] = white;
+   }
 
-	draw_segment_forward( pixels, width, height, x0, y0, length, black, prev_dir );	
+   draw_segment_forward( pixels, width, height, x0, y0, length, black, prev_dir );   
 
    printf( "Saving PNG to %s...\n", outfile );
    write_image( outfile, width, height, pixels, title );
    printf( "DONE.\n\n" );
 
-	for( int index = 0; index < num_iterations; index++ ) {
-		free( fib_words[ index ] );
-	}
-	free( fib_words );
-	free( pixels );
+   for( int index = 0; index < num_iterations; index++ ) {
+      free( fib_words[ index ] );
+   }
+   free( fib_words );
+   free( pixels );
    exit(EXIT_SUCCESS);
 }
 
