@@ -157,6 +157,93 @@ void draw_segment_forward( uint32_t* pixels, double width, double height, int x0
    
 }
 
+
+typedef enum direction {UP, DOWN, LEFT, RIGHT, FORWARD} direction_e;
+
+
+void print_dir( direction_e dir ) {
+   if ( dir == UP ) {
+      printf( "UP" );
+   } else if ( dir == DOWN ) {
+      printf( "DOWN" );
+   } else if ( dir == LEFT ) {
+      printf( "LEFT" );
+   } else if ( dir == RIGHT ) {
+      printf( "RIGHT" );
+   } else if ( dir == FORWARD ) {
+      printf( "FORWARD" );
+   } else {
+      printf( "<INVALID>" );
+   }
+}
+
+static direction_e prev_dir;
+
+void choose_direction( direction_e dir ) {
+   direction_e next_dir;
+   char* dir_str = NULL;
+   switch( prev_dir ) {
+      case UP:
+         if ( dir != DOWN ) {
+            next_dir = prev_dir;
+         } else {
+            printf( "ERROR: prev dir is UP" );
+            printf( "Invalid input direction " );
+            print_dir( dir );
+            printf( "\n" );
+            exit( EXIT_FAILURE );
+         }
+         break;
+      case DOWN:
+         if ( dir == LEFT ) {
+            next_dir = RIGHT;
+         } else if ( dir == RIGHT ) {
+            next_dir = LEFT;
+         } else if ( dir == FORWARD || dir == DOWN ) {
+            next_dir = prev_dir;
+         } else {
+            printf( "ERROR: prev dir is DOWN" );
+            printf( "Invalid input direction " );
+            print_dir( dir );
+            printf( "\n" );
+            exit( EXIT_FAILURE );
+         }
+         break;
+      case LEFT:
+         if ( dir == RIGHT ) {
+            next_dir = UP;
+         } else if ( dir == LEFT ) {
+            next_dir = DOWN;
+         } else if ( dir == FORWARD ) {
+            next_dir = prev_dir;
+         } else {
+            printf( "ERROR: prev dir is LEFT" );
+            printf( "Invalid input direction " );
+            print_dir( dir );
+            printf( "\n" );
+            exit( EXIT_FAILURE );
+         }
+         break;
+      case RIGHT:
+         if ( dir == LEFT ) {
+            next_dir = UP;
+         } else if ( dir == RIGHT ) {
+            next_dir = DOWN;
+         } else if ( dir == FORWARD ) {
+            next_dir = prev_dir;
+         } else {
+            printf( "ERROR: prev dir is RIGHT" );
+            printf( "Invalid input direction " );
+            print_dir( dir );
+            printf( "\n" );
+            exit( EXIT_FAILURE );
+         }
+         break;
+   } //
+   prev_dir = next_dir;   
+}
+
+
 static int verbose_flag;
 
 static struct option long_options[] = {
@@ -241,14 +328,30 @@ int main( int argc, char **argv ) {
    printf( "\n" );
 
    printf( "fib_word is %s\n", fib_words[ num_iterations - 1 ] );
+   
+   prev_dir = UP;
+   
+   direction_e temp_dir;
+   
    for( int index = 0; index < fib_word_len; index++ ) {
-      printf( "Go Forward-" );
+      //printf( "Go Forward-" );
+      printf( "Go " );
+      print_dir( prev_dir );
+      printf( "\n" );
+      temp_dir = FORWARD;
+      choose_direction( temp_dir );
       if ( fib_words[ num_iterations - 1 ][ index ] == '0' ) {   
          if ( index & 1 ) {
-            printf( "Go Right" );
+            //printf( "Go Right" );
+            temp_dir = RIGHT;
          } else {
-            printf( "Go Left" );
+            //printf( "Go Left" );
+            temp_dir = LEFT;
          }
+         printf( "Go " );
+         print_dir( prev_dir );
+         printf( "\n" );
+         choose_direction( temp_dir );
       }
       printf( "\n" );
    } // end of for loop
