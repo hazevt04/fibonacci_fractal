@@ -8,8 +8,6 @@
 #include <getopt.h>
 
 
-
-
 // Let's let val be 687. MAIN COLOR is val/768
 // This takes the float value 'val', converts it to red, green & blue values, then
 // sets those values into the image memory buffer location pointed to by 'ptr'
@@ -230,7 +228,6 @@ int main( int argc, char **argv ) {
       fib_words[ index ] = calloc( ( fib_word_len + 1 ), sizeof(char) );
       CHECK_NULL_PTR( fib_words[ index ] );
    }
-   
  
    strcpy( fib_words[0], "1" );
    //printf( "fib_words[%3d] is %s\n", 0, fib_words[ 0 ] );
@@ -289,7 +286,4 @@ int main( int argc, char **argv ) {
    free( pixels );
    exit(EXIT_SUCCESS);
 }
-
-
-
 
