@@ -342,7 +342,10 @@ int main( int argc, char **argv ) {
 
    
    direction_e temp_dir;
-   
+   direction_e* segment_directions = malloc( ( fib_word_len + 1 ) * sizeof( direction_e ) );
+	CHECK_NULL_PTR( segment_directions );
+	int segment_index = 0;
+
    for( int index = 0; index < fib_word_len; index++ ) {
       //printf( "Go Forward-" );
       temp_dir = FORWARD;
@@ -350,6 +353,12 @@ int main( int argc, char **argv ) {
       printf( "%d- Go ", ( index + 1 ) );
       print_dir( prev_dir );
       printf( "\n" );
+		
+		// prev_dir here corresponds to the direction of the line segments we want
+		// save it into the segment_directions array
+		segment_directions[ segment_index ] = prev_dir;		
+
+
       if ( fib_words[ num_iterations - 1 ][ index ] == '0' ) {   
          // If odd
 			if ( ( index + 1 ) & 1 ) {
@@ -364,7 +373,7 @@ int main( int argc, char **argv ) {
          //print_dir( prev_dir );
          //printf( "\n" );
       }
-		printf( "\n" );
+		//printf( "\n" );
    } // end of for loop
    
    char title[64];
