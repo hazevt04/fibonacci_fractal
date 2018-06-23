@@ -184,8 +184,10 @@ void choose_direction( direction_e dir ) {
    char* dir_str = NULL;
    switch( prev_dir ) {
       case UP:
-         if ( dir != DOWN ) {
-            next_dir = prev_dir;
+			if ( dir == FORWARD ) {
+				next_dir = prev_dir;
+         } else if ( dir != DOWN ) {
+            next_dir = dir;
          } else {
             printf( "ERROR: prev dir is UP" );
             printf( "Invalid input direction " );
@@ -241,6 +243,9 @@ void choose_direction( direction_e dir ) {
          break;
    } //
    prev_dir = next_dir;   
+   //printf( "Prev direction updated to " );
+   //print_dir( prev_dir );
+   //printf( "\n" );
 }
 
 
@@ -330,30 +335,36 @@ int main( int argc, char **argv ) {
    printf( "fib_word is %s\n", fib_words[ num_iterations - 1 ] );
    
    prev_dir = UP;
+
+   printf( "Prev direction is " );
+   print_dir( prev_dir );
+	printf( "\n" );
+
    
    direction_e temp_dir;
    
    for( int index = 0; index < fib_word_len; index++ ) {
       //printf( "Go Forward-" );
-      printf( "Go " );
-      print_dir( prev_dir );
-      printf( "\n" );
       temp_dir = FORWARD;
       choose_direction( temp_dir );
+      printf( "%d- Go ", ( index + 1 ) );
+      print_dir( prev_dir );
+      printf( "\n" );
       if ( fib_words[ num_iterations - 1 ][ index ] == '0' ) {   
-         if ( index & 1 ) {
+         // If odd
+			if ( ( index + 1 ) & 1 ) {
             //printf( "Go Right" );
             temp_dir = RIGHT;
          } else {
             //printf( "Go Left" );
             temp_dir = LEFT;
          }
-         printf( "Go " );
+         choose_direction( temp_dir );
+         printf( "%d- Turn ", ( index + 1 ) );
          print_dir( prev_dir );
          printf( "\n" );
-         choose_direction( temp_dir );
       }
-      printf( "\n" );
+		printf( "\n" );
    } // end of for loop
    
    char title[64];
