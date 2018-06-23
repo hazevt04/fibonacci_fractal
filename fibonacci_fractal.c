@@ -162,6 +162,11 @@ typedef struct {
    int y;
 } point_t;
 
+void print_point( point_t pt ) {
+   printf( "x: %d, y: %d", pt.x, pt.y );
+}
+
+
 void draw_segment_right( uint32_t* pixels, double width, double height, point_t start_pt, point_t* end_pt, int length, uint32_t color ) {
 
    for ( int y_index = start_pt.y; y_index < ( start_pt.y + THICKNESS ); y_index++ ) {
@@ -173,7 +178,9 @@ void draw_segment_right( uint32_t* pixels, double width, double height, point_t 
    }
    end_pt->x = start_pt.x + length;
    end_pt->y = start_pt.y;
-
+   printf( "%s() Endpoint is ", __func__ );
+   print_point( *end_pt );
+   printf( "\n" );
 }
 
 void draw_segment_left( uint32_t* pixels, double width, double height, point_t start_pt, point_t* end_pt, int length, uint32_t color ) {
@@ -187,6 +194,9 @@ void draw_segment_left( uint32_t* pixels, double width, double height, point_t s
    }
    end_pt->x = start_pt.x - length;
    end_pt->y = start_pt.y;
+   printf( "%s() Endpoint is ", __func__ );
+   print_point( *end_pt );
+   printf( "\n" );
 }
 
 
@@ -201,6 +211,9 @@ void draw_segment_up( uint32_t* pixels, double width, double height, point_t sta
    }
    end_pt->x = start_pt.x;
    end_pt->y = start_pt.y + length;
+   printf( "%s() Endpoint is ", __func__ );
+   print_point( *end_pt );
+   printf( "\n" );
 }
 
 
@@ -215,6 +228,9 @@ void draw_segment_down( uint32_t* pixels, double width, double height, point_t s
    }
    end_pt->x = start_pt.x;
    end_pt->y = start_pt.y - length;
+   printf( "%s() Endpoint is ", __func__ );
+   print_point( *end_pt );
+   printf( "\n" );
 }
 
 typedef enum direction {UP, DOWN, LEFT, RIGHT, FORWARD} direction_e;
