@@ -360,9 +360,9 @@ int main( int argc, char **argv ) {
             temp_dir = LEFT;
          }
          choose_direction( temp_dir );
-         printf( "%d- Turn ", ( index + 1 ) );
-         print_dir( prev_dir );
-         printf( "\n" );
+         //printf( "%d- Turn ", ( index + 1 ) );
+         //print_dir( prev_dir );
+         //printf( "\n" );
       }
 		printf( "\n" );
    } // end of for loop
