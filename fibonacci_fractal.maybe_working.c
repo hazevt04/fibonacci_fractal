@@ -441,8 +441,8 @@ int main( int argc, char **argv ) {
    double width = 1000.0;
    double height = 1000.0;
    
-	point_t start_pt;
-	start_pt.x = 50;
+   point_t start_pt;
+   start_pt.x = 50;
    start_pt.y = 50;
    int length = 20;
    uint32_t black = 0;
@@ -454,25 +454,25 @@ int main( int argc, char **argv ) {
    for ( int index = 0; index < width * height; index++ ) {
       pixels[ index ] = white;
    }
-	
+   
    point_t end_pt;
    end_pt.x = start_pt.x;
    end_pt.y = start_pt.y;
-	for ( int index = 0; index < fib_word_len; index++ ) {
-		direction_e temp_dir = segment_directions[ index ];
+   for ( int index = 0; index < fib_word_len; index++ ) {
+      direction_e temp_dir = segment_directions[ index ];
 // void draw_segment_up( uint32_t* pixels, double width, double height, point_t start_pt, point_t* end_pt, int length, uint32_t color ) {   
-		if ( temp_dir == UP ) {
-			draw_segment_up( pixels, width, height, start_pt, &end_pt, length, color );
-		} else if ( temp_dir == DOWN ) {
-			draw_segment_down( pixels, width, height, start_pt, &end_pt, length, color );
-		} else if ( temp_dir == LEFT ) {
-			draw_segment_left( pixels, width, height, start_pt, &end_pt, length, color );
-		} else {
-			draw_segment_right( pixels, width, height, start_pt, &end_pt, length, color );
-		}
+      if ( temp_dir == UP ) {
+         draw_segment_up( pixels, width, height, start_pt, &end_pt, length, color );
+      } else if ( temp_dir == DOWN ) {
+         draw_segment_down( pixels, width, height, start_pt, &end_pt, length, color );
+      } else if ( temp_dir == LEFT ) {
+         draw_segment_left( pixels, width, height, start_pt, &end_pt, length, color );
+      } else {
+         draw_segment_right( pixels, width, height, start_pt, &end_pt, length, color );
+      }
       start_pt.x = end_pt.x;
       start_pt.y = end_pt.y;
-	}
+   }
 
    printf( "Saving PNG to %s...\n", outfile );
    write_image( outfile, width, height, pixels, title );

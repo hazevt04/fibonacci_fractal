@@ -145,18 +145,77 @@ const int fib_numbers[16] = {
 
 #define THICKNESS 5
 
-void draw_segment_forward( uint32_t* pixels, double width, double height, int x0, int y0, int length, uint32_t color, int prev_dir ) {
-   
-   for ( int y_index = y0; y_index < ( y0 + THICKNESS ); y_index++ ) {
-      int init_index = (int)( y_index * width + x0 );
+//void draw_segment_forward( uint32_t* pixels, double width, double height, int x0, int y0, int length, uint32_t color, int prev_dir ) {
+//   
+//   for ( int y_index = y0; y_index < ( y0 + THICKNESS ); y_index++ ) {
+//      int init_index = (int)( y_index * width + x0 );
+//      int last_index = (int)( init_index + length );
+//      for ( int index = init_index; index < last_index; index++ ) {
+//         pixels[ index ] = color;
+//      }
+//   }
+//   
+//}
+
+typedef struct {
+   int x;
+   int y;
+} point_t;
+
+void draw_segment_right( uint32_t* pixels, double width, double height, point_t start_pt, point_t* end_pt, int length, uint32_t color ) {
+
+   for ( int y_index = start_pt.y; y_index < ( start_pt.y + THICKNESS ); y_index++ ) {
+      int init_index = (int)( y_index * width + start_pt.x );
       int last_index = (int)( init_index + length );
       for ( int index = init_index; index < last_index; index++ ) {
          pixels[ index ] = color;
       }
    }
-   
+   end_pt->x = start_pt.x + length;
+   end_pt->y = start_pt.y;
+
 }
 
+void draw_segment_left( uint32_t* pixels, double width, double height, point_t start_pt, point_t* end_pt, int length, uint32_t color ) {
+
+   for ( int y_index = start_pt.y; y_index < ( start_pt.y + THICKNESS ); y_index++ ) {
+      int init_index = (int)( y_index * width + start_pt.x );
+      int last_index = (int)( init_index - length );
+      for ( int index = last_index; index > init_index; index-- ) {
+         pixels[ index ] = color;
+      }
+   }
+   end_pt->x = start_pt.x - length;
+   end_pt->y = start_pt.y;
+}
+
+
+void draw_segment_up( uint32_t* pixels, double width, double height, point_t start_pt, point_t* end_pt, int length, uint32_t color ) {
+
+   for ( int x_index = start_pt.x; x_index < ( start_pt.x + THICKNESS ); x_index++ ) {
+      int init_index = (int)( x_index * height + start_pt.y );
+      int last_index = (int)( init_index + length );
+      for ( int index = init_index; index < last_index; index++ ) {
+         pixels[ index ] = color;
+      }
+   }
+   end_pt->x = start_pt.x;
+   end_pt->y = start_pt.y + length;
+}
+
+
+void draw_segment_down( uint32_t* pixels, double width, double height, point_t start_pt, point_t* end_pt, int length, uint32_t color ) {
+
+   for ( int x_index = start_pt.x; x_index < ( start_pt.x + THICKNESS ); x_index++ ) {
+      int init_index = (int)( x_index * height + start_pt.y );
+      int last_index = (int)( init_index - length );
+      for ( int index = last_index; index > init_index; index-- ) {
+         pixels[ index ] = color;
+      }
+   }
+   end_pt->x = start_pt.x;
+   end_pt->y = start_pt.y - length;
+}
 
 typedef enum direction {UP, DOWN, LEFT, RIGHT, FORWARD} direction_e;
 
@@ -184,8 +243,8 @@ void choose_direction( direction_e dir ) {
    char* dir_str = NULL;
    switch( prev_dir ) {
       case UP:
-			if ( dir == FORWARD ) {
-				next_dir = prev_dir;
+         if ( dir == FORWARD ) {
+            next_dir = prev_dir;
          } else if ( dir != DOWN ) {
             next_dir = dir;
          } else {
@@ -338,13 +397,12 @@ int main( int argc, char **argv ) {
 
    printf( "Prev direction is " );
    print_dir( prev_dir );
-	printf( "\n" );
-
-   
+   printf( "\n" );
+ 
    direction_e temp_dir;
-   direction_e* segment_directions = malloc( ( fib_word_len + 1 ) * sizeof( direction_e ) );
-	CHECK_NULL_PTR( segment_directions );
-	int segment_index = 0;
+   direction_e* segment_directions = malloc( ( fib_word_len ) * sizeof( direction_e ) );
+   CHECK_NULL_PTR( segment_directions );
+   int segment_index = 0;
 
    for( int index = 0; index < fib_word_len; index++ ) {
       //printf( "Go Forward-" );
@@ -353,15 +411,14 @@ int main( int argc, char **argv ) {
       printf( "%d- Go ", ( index + 1 ) );
       print_dir( prev_dir );
       printf( "\n" );
-		
-		// prev_dir here corresponds to the direction of the line segments we want
-		// save it into the segment_directions array
-		segment_directions[ segment_index ] = prev_dir;		
-
+      
+      // prev_dir here corresponds to the direction of the line segments we want
+      // save it into the segment_directions array
+      segment_directions[ segment_index ] = prev_dir;      
 
       if ( fib_words[ num_iterations - 1 ][ index ] == '0' ) {   
          // If odd
-			if ( ( index + 1 ) & 1 ) {
+         if ( ( index + 1 ) & 1 ) {
             //printf( "Go Right" );
             temp_dir = RIGHT;
          } else {
@@ -373,7 +430,7 @@ int main( int argc, char **argv ) {
          //print_dir( prev_dir );
          //printf( "\n" );
       }
-		//printf( "\n" );
+      //printf( "\n" );
    } // end of for loop
    
    char title[64];
@@ -383,8 +440,10 @@ int main( int argc, char **argv ) {
    strcpy( outfile, "fib_fractal.png" );
    double width = 1000.0;
    double height = 1000.0;
-   int x0 = 50;
-   int y0 = 50;
+   
+   point_t start_pt;
+   start_pt.x = 50;
+   start_pt.y = 50;
    int length = 20;
    uint32_t black = 0;
    uint32_t white = 0xffffff;
@@ -395,8 +454,25 @@ int main( int argc, char **argv ) {
    for ( int index = 0; index < width * height; index++ ) {
       pixels[ index ] = white;
    }
-
-   draw_segment_forward( pixels, width, height, x0, y0, length, black, prev_dir );   
+   
+   point_t end_pt;
+   end_pt.x = start_pt.x;
+   end_pt.y = start_pt.y;
+   for ( int index = 0; index < fib_word_len; index++ ) {
+      direction_e temp_dir = segment_directions[ index ];
+// void draw_segment_up( uint32_t* pixels, double width, double height, point_t start_pt, point_t* end_pt, int length, uint32_t color ) {   
+      if ( temp_dir == UP ) {
+         draw_segment_up( pixels, width, height, start_pt, &end_pt, length, color );
+      } else if ( temp_dir == DOWN ) {
+         draw_segment_down( pixels, width, height, start_pt, &end_pt, length, color );
+      } else if ( temp_dir == LEFT ) {
+         draw_segment_left( pixels, width, height, start_pt, &end_pt, length, color );
+      } else {
+         draw_segment_right( pixels, width, height, start_pt, &end_pt, length, color );
+      }
+      start_pt.x = end_pt.x;
+      start_pt.y = end_pt.y;
+   }
 
    printf( "Saving PNG to %s...\n", outfile );
    write_image( outfile, width, height, pixels, title );
