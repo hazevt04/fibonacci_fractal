@@ -167,89 +167,90 @@ void print_point( point_t pt ) {
 }
 
 
-void draw_segment_right( uint32_t* pixels, double width, double height, point_t start_pt, point_t* end_pt, int length, uint32_t color ) {
+void draw_segment_right( uint32_t* pixels, double width, double height, point_t start_pt, int* end_pt, int length, uint32_t color ) {
 
    printf( "%s() Startpoint is ", __func__ );
    print_point( start_pt );
    printf( "\n" );
+   int index = 0;
    for ( int y_index = start_pt.y; y_index < ( start_pt.y + THICKNESS ); y_index++ ) {
       int init_index = (int)( y_index * width + start_pt.x );
+      printf( "%d- init_index = %d\n", y_index, init_index );
       int last_index = (int)( init_index + length );
-      for ( int index = init_index; index < last_index; index++ ) {
+      printf( "%d- last_index = %d\n", y_index, last_index );
+      for ( index = init_index; index <= last_index; index++ ) {
+         printf( "\t%d- index = %d\n", index, index );
          pixels[ index ] = color;
       }
    }
-   end_pt->x = start_pt.x + length;
-   end_pt->y = start_pt.y;
-   printf( "%s() Endpoint is ", __func__ );
-   print_point( *end_pt );
-   printf( "\n" );
+   *end_pt = index;
+   printf( "%s() Endpoint is %d\n", __func__, *end_pt );
 }
 
-void draw_segment_left( uint32_t* pixels, double width, double height, point_t start_pt, point_t* end_pt, int length, uint32_t color ) {
+void draw_segment_left( uint32_t* pixels, double width, double height, point_t start_pt, int* end_pt, int length, uint32_t color ) {
 
    printf( "%s() Startpoint is ", __func__ );
    print_point( start_pt );
    printf( "\n" );
+
+   int index = 0;
    for ( int y_index = start_pt.y; y_index < ( start_pt.y + THICKNESS ); y_index++ ) {
       int init_index = (int)( y_index * width + start_pt.x );
-      int last_index = (int)( init_index - length );
-      for ( int index = last_index; index > init_index; index-- ) {
+      printf( "%d- init_index = %d\n", y_index, init_index );
+      int last_index = (int)( init_index + length );
+      printf( "%d- last_index = %d\n", y_index, last_index );
+      for ( index = last_index; index >= init_index; index-- ) {
+         printf( "\t%d- index = %d\n", index, index );
          pixels[ index ] = color;
       }
    }
-   end_pt->x = start_pt.x - length;
-   end_pt->y = start_pt.y;
-   printf( "%s() Endpoint is ", __func__ );
-   print_point( *end_pt );
-   printf( "\n" );
+   *end_pt = index;
+   printf( "%s() Endpoint is %d\n", __func__, *end_pt );
 }
 
 
-void draw_segment_up( uint32_t* pixels, double width, double height, point_t start_pt, point_t* end_pt, int length, uint32_t color ) {
+void draw_segment_up( uint32_t* pixels, double width, double height, point_t start_pt, int* end_pt, int length, uint32_t color ) {
 
    printf( "width x height = %f\n", ( width * height ) );
    printf( "%s() Startpoint is ", __func__ );
    print_point( start_pt );
    printf( "\n" );
+
+   int index = 0;
    for ( int x_index = start_pt.x; x_index < ( start_pt.x + THICKNESS ); x_index++ ) {
       int init_index = (int)( x_index * height + start_pt.y );
       printf( "init_index is %d\n", init_index );
       int last_index = (int)( init_index + ( length * ( int )width ) );
       printf( "last_index is %d\n", last_index );
-      for ( int index = last_index; index > init_index; index-=(int)width ) {
+      for ( index = last_index; index > init_index; index-=(int)width ) {
          pixels[ index ] = color;
          printf( "%d- index = %d\n", index, ( index ) );
       }
    }
-   end_pt->x = start_pt.x;
-   end_pt->y = start_pt.y + length;
-   printf( "%s() Endpoint is ", __func__ );
-   print_point( *end_pt );
-   printf( "\n" );
+   *end_pt = index;
+   printf( "%s() Endpoint is %d\n", __func__, *end_pt );
 }
 
-void draw_segment_down( uint32_t* pixels, double width, double height, point_t start_pt, point_t* end_pt, int length, uint32_t color ) {
+void draw_segment_down( uint32_t* pixels, double width, double height, point_t start_pt, int* end_pt, int length, uint32_t color ) {
 
    printf( "width x height = %f\n", ( width * height ) );
    printf( "%s() Startpoint is ", __func__ );
    print_point( start_pt );
    printf( "\n" );
+   
+   int index = 0;
    for ( int x_index = start_pt.x; x_index < ( start_pt.x + THICKNESS ); x_index++ ) {
       int init_index = (int)( x_index * height + start_pt.y );
       printf( "init_index is %d\n", init_index );
       int last_index = (int)( init_index + ( length * ( int )width ) );
       printf( "last_index is %d\n", last_index );
-      for ( int index = init_index; index < init_index; index+=(int)width ) {
+      for ( index = init_index; index < last_index; index+=(int)width ) {
          pixels[ index ] = color;
          printf( "%d- index = %d\n", index, ( index ) );
       }
    }
-   end_pt->x = start_pt.x;
-   end_pt->y = start_pt.y + length;
-   printf( "%s() Endpoint is ", __func__ );
-   print_point( *end_pt );
-   printf( "\n" );
+   *end_pt = index;
+   printf( "%s() Endpoint is %d\n", __func__, *end_pt );
 }
 
 typedef enum direction {UP, DOWN, LEFT, RIGHT, FORWARD} direction_e;
@@ -481,11 +482,13 @@ int main( int argc, char **argv ) {
    strcpy( outfile, "fib_fractal.png" );
    double width = 1000.0;
    double height = 1000.0;
+   //double width = 100.0;
+   //double height = 100.0;
    
-   //point_t start_pt;
-   //start_pt.x = 50;
-   //start_pt.y = 50;
-   int length = 20;
+   point_t start_pt;
+   start_pt.x = 50;
+   start_pt.y = 50;
+   int length = 10;
    uint32_t black = 0;
    uint32_t white = 0xffffff;
    uint32_t color = 0;   
@@ -496,22 +499,33 @@ int main( int argc, char **argv ) {
       pixels[ index ] = white;
    }
    
-   //point_t end_pt;
-   //end_pt.x = start_pt.x;
-   //end_pt.y = start_pt.y;
+   int end_index;
 
-   point_t start_pt[4];
-   point_t end_pt[4];
-
-   for ( int index = 0; index < 4; index++ ) {
-      start_pt[ index ].x = ( 50 * ( index + 1 ) );
-      start_pt[ index ].y = 50;    
-   }
-
-   draw_segment_up( pixels, width, height, start_pt[0], &end_pt[0], length, color );
-   draw_segment_right( pixels, width, height, start_pt[1], &end_pt[1], length, color );
-   draw_segment_down( pixels, width, height, start_pt[2], &end_pt[2], length, color );
-   draw_segment_left( pixels, width, height, start_pt[3], &end_pt[3], length, color );
+   draw_segment_up( pixels, width, height, start_pt, &end_index, length, color );
+   printf( "%s(): After draw_segment_up()- end_index is %d\n", __func__, end_index );
+   start_pt.x = ( end_index / ( int )width );
+   start_pt.y = ( end_index / ( int )height );
+   
+   draw_segment_right( pixels, width, height, start_pt, &end_index, length, color );
+   printf( "%s(): After draw_segment_right()- end_index is %d\n", __func__, end_index );
+   start_pt.x = ( end_index / ( int )width );
+   start_pt.y = ( end_index / ( int )height );
+   
+   draw_segment_down( pixels, width, height, start_pt, &end_index, length, color );
+   printf( "%s(): After draw_segment_down()- end_index is %d\n", __func__, end_index );
+   start_pt.x = ( end_index / ( int )width );
+   start_pt.y = ( end_index / ( int )height );
+   
+   draw_segment_down( pixels, width, height, start_pt, &end_index, length, color );
+   printf( "%s(): After draw_segment_down()- end_index is %d\n", __func__, end_index );
+   start_pt.x = ( end_index / ( int )width );
+   start_pt.y = ( end_index / ( int )height );
+   
+   draw_segment_left( pixels, width, height, start_pt, &end_index, length, color );
+   printf( "%s(): After draw_segment_left()- end_index is %d\n", __func__, end_index );
+   start_pt.x = ( end_index / ( int )width );
+   start_pt.y = ( end_index / ( int )height );
+   
    /*
    for ( int index = 0; index < fib_word_len; index++ ) {
       direction_e temp_dir = segment_directions[ index ];
