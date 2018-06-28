@@ -128,35 +128,6 @@ const int fib_numbers[16] = {
 };
 */
 
-// Let f1 be "1" and f2 be "0".
-// fn = fn-1fn-2, the concatenaton of the two previous terms
-// 0 -> 01, 1->0, f1 = 1
-// f1 = 1
-// f2 = 0
-// f3 = 01
-// f4 = 010
-// f5 = 01001
-// f6 = 01001010
-// f7 = 0100101001001
-// ...
-//void gen_fractal_word( char* fractal, int num_iterations ) {
-//   
-//}
-
-#define THICKNESS 1
-
-//void draw_segment_forward( uint32_t* pixels, double width, double height, int x0, int y0, int length, uint32_t color, int prev_dir ) {
-//   
-//   for ( int y_index = y0; y_index < ( y0 + THICKNESS ); y_index++ ) {
-//      int init_index = (int)( y_index * width + x0 );
-//      int last_index = (int)( init_index + length );
-//      for ( int index = init_index; index < last_index; index++ ) {
-//         pixels[ index ] = color;
-//      }
-//   }
-//   
-//}
-
 
 void draw_segment_right( uint32_t* pixels, double width, double height, int start_index, int* end_index, int length, uint32_t color ) {
 
@@ -386,7 +357,21 @@ int main( int argc, char **argv ) {
       fib_words[ index ] = calloc( ( fib_word_len + 1 ), sizeof(char) );
       CHECK_NULL_PTR( fib_words[ index ] );
    }
- 
+
+   // Generate Fibonacci Word
+   // ======================================
+   // Let f1 be "1" and f2 be "0".
+   // fn = fn-1fn-2, the concatenaton of the two previous terms
+   // 0 -> 01, 1->0, f1 = 1
+   // f1 = 1
+   // f2 = 0
+   // f3 = 01
+   // f4 = 010
+   // f5 = 01001
+   // f6 = 01001010
+   // f7 = 0100101001001
+   // ...
+    
    strcpy( fib_words[0], "1" );
    //printf( "fib_words[%3d] is %s\n", 0, fib_words[ 0 ] );
    strcpy( fib_words[1], "0" );
@@ -497,6 +482,6 @@ int main( int argc, char **argv ) {
    free( fib_words );
    free( segment_directions );
    free( pixels );
-   exit(EXIT_SUCCESS);
+   exit( EXIT_SUCCESS );
 }
 
