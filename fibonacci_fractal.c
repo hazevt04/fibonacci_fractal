@@ -7,6 +7,50 @@
 #include <png.h>
 #include <getopt.h>
 
+#define VERBOSE_PRINTF(fmt, ...) { \
+   if ( verbose_flag ) { \
+      printf(fmt, ##__VA_ARGS__); \
+   } \
+}
+
+
+#define CHECK_NULL_PTR(ptr) { \
+   if (!ptr) { \
+      fprintf( stderr, "File %s, Line %d in %s(): ERROR: " #ptr \
+         " is NULL! malloc failed?\n", \
+         __FILE__, __LINE__, __func__ ); \
+      exit(EXIT_FAILURE); \
+   } \
+}
+
+typedef enum direction {UP, DOWN, LEFT, RIGHT, FORWARD} direction_e;
+
+
+void print_dir( direction_e dir ) {
+   if ( dir == UP ) {
+      printf( "UP" );
+   } else if ( dir == DOWN ) {
+      printf( "DOWN" );
+   } else if ( dir == LEFT ) {
+      printf( "LEFT" );
+   } else if ( dir == RIGHT ) {
+      printf( "RIGHT" );
+   } else if ( dir == FORWARD ) {
+      printf( "FORWARD" );
+   } else {
+      printf( "<INVALID>" );
+   }
+}
+
+
+int fib_recursive( int n ) {
+   if ( n < 2 ) {
+      return 1;   
+   } else {
+      return fib_recursive( n - 1 ) + fib_recursive( n - 2 );
+   }   
+}
+
 
 // Let's let val be 687. MAIN COLOR is val/768
 // This takes the float value 'val', converts it to red, green & blue values, then
@@ -103,32 +147,6 @@ int write_image(char* filename, int width, int height, uint32_t* buffer, char* t
 } // end of write_image()
 
 
-#define VERBOSE_PRINTF(fmt, ...) { \
-   if ( verbose_flag ) { \
-      printf(fmt, ##__VA_ARGS__); \
-   } \
-}
-
-
-#define CHECK_NULL_PTR(ptr) { \
-   if (!ptr) { \
-      fprintf( stderr, "File %s, Line %d in %s(): ERROR: " #ptr \
-         " is NULL! malloc failed?\n", \
-         __FILE__, __LINE__, __func__ ); \
-      exit(EXIT_FAILURE); \
-   } \
-}
-
-/*
-const int fib_numbers[16] = { 
-      1,    1,    2,    3, 
-      5,    8,   13,   21, 
-     34,   55,   89,  144, 
-    233,  377,  610,  987 
-};
-*/
-
-
 void draw_segment_right( uint32_t* pixels, double width, double height, int start_index, int* end_index, int length, uint32_t color ) {
 
    int index = 0;
@@ -145,6 +163,7 @@ void draw_segment_right( uint32_t* pixels, double width, double height, int star
    *end_index = last_index;
    //printf( "%s() end_index is %d\n", __func__, *end_index );
 }
+
 
 void draw_segment_left( uint32_t* pixels, double width, double height, int start_index, int* end_index, int length, uint32_t color ) {
 
@@ -181,6 +200,7 @@ void draw_segment_up( uint32_t* pixels, double width, double height, int start_i
    //printf( "%s(): end_point is %d\n", __func__, *end_index );
 }
 
+
 void draw_segment_down( uint32_t* pixels, double width, double height, int start_index, int* end_index, int length, uint32_t color ) {
 
    int index = 0;
@@ -198,26 +218,8 @@ void draw_segment_down( uint32_t* pixels, double width, double height, int start
    //printf( "%s(): end_point is %d\n", __func__, *end_index );
 }
 
-typedef enum direction {UP, DOWN, LEFT, RIGHT, FORWARD} direction_e;
-
-
-void print_dir( direction_e dir ) {
-   if ( dir == UP ) {
-      printf( "UP" );
-   } else if ( dir == DOWN ) {
-      printf( "DOWN" );
-   } else if ( dir == LEFT ) {
-      printf( "LEFT" );
-   } else if ( dir == RIGHT ) {
-      printf( "RIGHT" );
-   } else if ( dir == FORWARD ) {
-      printf( "FORWARD" );
-   } else {
-      printf( "<INVALID>" );
-   }
-}
-
 static direction_e prev_dir;
+
 
 void choose_direction( direction_e dir ) {
    direction_e next_dir;
@@ -288,11 +290,14 @@ void choose_direction( direction_e dir ) {
 
 static int verbose_flag;
 
+
 static struct option long_options[] = {
    { "verbose", no_argument, NULL, 'v' },
    { "num_iterations", required_argument, NULL, 'n' },
+   { "output_file", optional_argument, NULL, 'o' },
    { 0, 0, 0, 0 }
 };   
+
 
 void usage( char* argv ) {
    printf( "Usage %s <options>\n", argv );
@@ -303,23 +308,27 @@ void usage( char* argv ) {
    printf( "%20s%4s%56s", 
       "--num_iterations", "-n", 
       "Number of iterations for the Fibonacci fractal\n" );  
+   printf( "%20s%4s%56s", 
+      "--output_file", "-n", 
+      "path to the output PNG file for the fractal\n" );  
 }
 
-int fib_recursive( int n ) {
-   if ( n < 2 ) {
-      return 1;   
-   } else {
-      return fib_recursive( n - 1 ) + fib_recursive( n - 2 );
-   }   
-}
 
 int main( int argc, char **argv ) {
    int num_iterations = 1;
+   char title[64];
+   strcpy( title, "FibFractal" );
+    
+   //char* output_file = malloc( 512 );
+   char* output_file = getenv( "PWD" );
+   CHECK_NULL_PTR( output_file );
+   strcat( output_file, "/fib_fractal.png" );
+
    char* endptr = NULL;
 
    int option_index = 0;
    verbose_flag = 0;
-   int ch = getopt_long( argc, argv, "vn:", long_options, &option_index );
+   int ch = getopt_long( argc, argv, "vn:o:", long_options, &option_index );
    while( ch != -1 ) {
       switch( ch ) {
          case 0:
@@ -335,15 +344,19 @@ int main( int argc, char **argv ) {
          case 'n':
             num_iterations = strtod( optarg, &endptr );
             break;
+         case 'o': 
+            strcpy( output_file, optarg );
+            break;
          default:
             printf( "ERROR: option %c (%d) invalid\n", ch, ch );
             break;
       } // end of switch
       
-      ch = getopt_long( argc, argv, "vn:", long_options, &option_index );
+      ch = getopt_long( argc, argv, "vn:o:", long_options, &option_index );
    }
 
-   VERBOSE_PRINTF( "num_iterations set to %d \n", num_iterations );  
+   VERBOSE_PRINTF( "num_iterations set to %d.\n", num_iterations );  
+   VERBOSE_PRINTF( "output_file set to %s.\n", output_file );  
    
    int num_chars = fib_recursive( num_iterations );
    char** fib_words = malloc(num_iterations * sizeof(char*));
@@ -431,11 +444,6 @@ int main( int argc, char **argv ) {
       //printf( "\n" );
    } // end of for loop
    
-   char title[64];
-   strcpy( title, "FibFractal" );
-    
-   char outfile[64];
-   strcpy( outfile, "/home/glenn/Downloads/Fibonacci/fib_fractal.png" );
    double width = 4015.0;
    double height = 4015.0;
    uint32_t black = 0;
@@ -472,8 +480,8 @@ int main( int argc, char **argv ) {
       start_index = end_index;
    }
 
-   printf( "Saving PNG to %s...\n", outfile );
-   write_image( outfile, width, height, pixels, title );
+   printf( "Saving PNG to %s...\n", output_file );
+   write_image( output_file, width, height, pixels, title );
    printf( "DONE.\n\n" );
 
    for( int index = 0; index < num_iterations; index++ ) {
