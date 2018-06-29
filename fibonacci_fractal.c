@@ -151,17 +151,13 @@ void draw_segment_right( uint32_t* pixels, double width, double height, int star
 
    int index = 0;
    int max_overall_index = ( int )width * ( int )height;
-   //printf( "%s(): start_index = %d\n", __func__, start_index );
    int last_index = (int)( start_index + length );
-   //printf( "%s(): last_index = %d\n", __func__, last_index );
    for ( index = start_index; index < last_index; index++ ) {
       if ( ( index >= 0 ) && ( index < max_overall_index ) ) { 
          pixels[ index ] = color;
-         //printf( "%s():\tindex = %d\n", __func__, index );
       }
    }
    *end_index = last_index;
-   //printf( "%s() end_index is %d\n", __func__, *end_index );
 }
 
 
@@ -169,17 +165,13 @@ void draw_segment_left( uint32_t* pixels, double width, double height, int start
 
    int index = 0;
    int max_overall_index = ( int )width * ( int )height;
-   //printf( "%s(): start_index = %d\n", __func__, start_index );
    int last_index = (int)( start_index - length );
-   //printf( "%s()- last_index = %d\n", __func__, last_index );
    for ( index = start_index; index >= last_index; index-- ) {
       if ( ( index >= 0 ) && ( index < max_overall_index ) ) { 
          pixels[ index ] = color;
-         //printf( "%s():\tindex = %d\n", __func__, index );
       }
    }
    *end_index = last_index;
-   //printf( "%s() end_index is %d\n", __func__, *end_index );
 }
 
 
@@ -187,17 +179,13 @@ void draw_segment_up( uint32_t* pixels, double width, double height, int start_i
 
    int index = 0;
    int max_overall_index = ( int )width * ( int )height;
-   //printf( "%s(): start_index is %d\n", __func__, start_index );
    int last_index = (int)( start_index - ( length * ( int )width ) );
-   //printf( "%s(): last_index is %d\n", __func__, last_index );
    for ( index = start_index; index > last_index; index-=(int)width ) {
       if ( ( index >= 0 ) && ( index < max_overall_index ) ) { 
          pixels[ index ] = color;
-         //printf( "%s():\tindex = %d\n", __func__, index );
       }
    }
    *end_index = index;
-   //printf( "%s(): end_point is %d\n", __func__, *end_index );
 }
 
 
@@ -205,17 +193,13 @@ void draw_segment_down( uint32_t* pixels, double width, double height, int start
 
    int index = 0;
    int max_overall_index = ( int )width * ( int )height;
-   //printf( "%s(): start_index is %d\n", __func__, start_index );
    int last_index = (int)( start_index + ( length * ( int )width ) );
-   //printf( "%s(): last_index is %d\n", __func__, last_index );
    for ( index = start_index; index < last_index; index+=(int)width ) {
       if ( ( index >= 0 ) && ( index < max_overall_index ) ) { 
          pixels[ index ] = color;
       }
-      //printf( "%s():\tindex = %d\n", __func__, index );
    }
    *end_index = index;
-   //printf( "%s(): end_point is %d\n", __func__, *end_index );
 }
 
 static direction_e prev_dir;
@@ -319,7 +303,6 @@ int main( int argc, char **argv ) {
    char title[64];
    strcpy( title, "FibFractal" );
     
-   //char* output_file = malloc( 512 );
    char* output_file = getenv( "PWD" );
    CHECK_NULL_PTR( output_file );
    strcat( output_file, "/fib_fractal.png" );
@@ -386,13 +369,10 @@ int main( int argc, char **argv ) {
    // ...
     
    strcpy( fib_words[0], "1" );
-   //printf( "fib_words[%3d] is %s\n", 0, fib_words[ 0 ] );
    strcpy( fib_words[1], "0" );
-   //printf( "fib_words[%3d] is %s\n", 1, fib_words[ 1 ] );
    for( int index = 2; index < num_iterations; index++ ) {
       strcat( fib_words[ index ], fib_words[ index - 1 ] );
       strcat( fib_words[ index ], fib_words[ index - 2 ] );
-      //printf( "fib_words[%3d] is %s\n", index, fib_words[ index ] );
    }
    printf( "\n" );
 
@@ -400,48 +380,27 @@ int main( int argc, char **argv ) {
    
    prev_dir = UP;
 
-   //printf( "Prev direction is " );
-   //print_dir( prev_dir );
-   //printf( "\n" );
- 
    direction_e temp_dir;
    direction_e* segment_directions = malloc( ( fib_word_len ) * sizeof( direction_e ) );
    CHECK_NULL_PTR( segment_directions );
    int segment_index = 0;
    
    for( int index = 0; index < fib_word_len; index++ ) {
-      //printf( "Go Forward-" );
       temp_dir = FORWARD;
       choose_direction( temp_dir );
-      //printf( "%d- (In Loop) Go ", ( index + 1 ) );
-      //print_dir( prev_dir );
-      //printf( "\n" );
       
-      // prev_dir here corresponds to the direction of the line segments we want
-      // save it into the segment_directions array
       segment_directions[ segment_index ] = prev_dir;      
-      
-      //printf( "Segment Direction %d- ", ( segment_index + 1 ) );
-      //print_dir( segment_directions[ segment_index ] );
-      //printf( "\n" );
-      
       segment_index++;
       
       if ( fib_words[ num_iterations - 1 ][ index ] == '0' ) {   
          // If odd
          if ( ( index + 1 ) & 1 ) {
-            //printf( "Go Right" );
             temp_dir = RIGHT;
          } else {
-            //printf( "Go Left" );
             temp_dir = LEFT;
          }
          choose_direction( temp_dir );
-         //printf( "%d- Turn ", ( index + 1 ) );
-         //print_dir( prev_dir );
-         //printf( "\n" );
       }
-      //printf( "\n" );
    } // end of for loop
    
    double width = 4015.0;
@@ -455,9 +414,6 @@ int main( int argc, char **argv ) {
       pixels[ index ] = white;
    }
    
-   //printf( "%s() width is %d and height is %d\n", __func__, ( int )width, ( int )height );
-   //printf( "%s() %d Pixels (AKA maximum index.\n", __func__, ( int )( width * height ) ); 
-   //printf( "%s() I want to make the first start index be %d\n", __func__, ( ( int )width * ( int )( height - 50.0 ) + 50 ) ); 
    int start_index = ( ( int )width * ( height - 15 ) ) + 15;
    int end_index;
    int length = 5;
@@ -465,9 +421,6 @@ int main( int argc, char **argv ) {
    
    for ( int index = 0; index < fib_word_len; index++ ) {
       direction_e temp_dir = segment_directions[ index ];
-      //printf( "%d: temp_dir is ", ( index + 1 ) );
-      //print_dir( temp_dir );
-      //printf( "\n" );
       if ( temp_dir == UP ) {
          draw_segment_up( pixels, width, height, start_index, &end_index, length, color );
       } else if ( temp_dir == DOWN ) {
