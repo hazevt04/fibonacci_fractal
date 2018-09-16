@@ -25,7 +25,6 @@
 
 typedef enum direction {UP, DOWN, LEFT, RIGHT, FORWARD} direction_e;
 
-
 void print_dir( direction_e dir ) {
    if ( dir == UP ) {
       printf( "UP" );
@@ -278,6 +277,7 @@ static int verbose_flag;
 static struct option long_options[] = {
    { "verbose", no_argument, NULL, 'v' },
    { "num_iterations", required_argument, NULL, 'n' },
+   { "color", optional_argument, NULL, 'c' },
    { "output_file", optional_argument, NULL, 'o' },
    { 0, 0, 0, 0 }
 };   
@@ -293,6 +293,9 @@ void usage( char* argv ) {
       "--num_iterations", "-n", 
       "Number of iterations for the Fibonacci fractal\n" );  
    printf( "%20s%4s%56s", 
+      "--color", "-c", 
+      "Color of the Fibonacci fractal\n" );  
+   printf( "%20s%4s%56s", 
       "--output_file", "-n", 
       "path to the output PNG file for the fractal\n" );  
 }
@@ -300,6 +303,7 @@ void usage( char* argv ) {
 
 int main( int argc, char **argv ) {
    int num_iterations = 1;
+   uint32_t color = 0;   
    char title[64];
    strcpy( title, "FibFractal" );
     
@@ -309,9 +313,10 @@ int main( int argc, char **argv ) {
 
    char* endptr = NULL;
 
+   int error = 0;
    int option_index = 0;
    verbose_flag = 0;
-   int ch = getopt_long( argc, argv, "vn:o:", long_options, &option_index );
+   int ch = getopt_long( argc, argv, "vn:c:o:", long_options, &option_index );
    while( ch != -1 ) {
       switch( ch ) {
          case 0:
@@ -327,18 +332,28 @@ int main( int argc, char **argv ) {
          case 'n':
             num_iterations = strtod( optarg, &endptr );
             break;
+         case 'c':
+            color = strtod( optarg, &endptr );
+            color &= 0xffffff;
+            break;
          case 'o': 
             strcpy( output_file, optarg );
             break;
          default:
-            printf( "ERROR: option %c (%d) invalid\n", ch, ch );
+            error = 1;
             break;
       } // end of switch
       
-      ch = getopt_long( argc, argv, "vn:o:", long_options, &option_index );
+      if ( error ) {
+         usage( argv[0] ); 
+         exit( EXIT_FAILURE );
+      }
+
+      ch = getopt_long( argc, argv, "vn:c:o:", long_options, &option_index );
    }
 
    VERBOSE_PRINTF( "num_iterations set to %d.\n", num_iterations );  
+   VERBOSE_PRINTF( "color set to %0x.\n", color );  
    VERBOSE_PRINTF( "output_file set to %s.\n", output_file );  
    
    int num_chars = fib_recursive( num_iterations );
@@ -407,7 +422,6 @@ int main( int argc, char **argv ) {
    double height = 4015.0;
    uint32_t black = 0;
    uint32_t white = 0xffffff;
-   uint32_t color = 0;   
    uint32_t* pixels = malloc( width * height * sizeof(uint32_t) );
    CHECK_NULL_PTR( pixels );
    for ( int index = 0; index < width * height; index++ ) {
