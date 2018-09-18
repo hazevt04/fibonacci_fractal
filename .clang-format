@@ -43,7 +43,7 @@ Cpp11BracedListStyle: false
 DerivePointerAlignment: false
 FixNamespaceComments: true
 IncludeBlocks: Regroup
-IndentCaseLabels: true
+IndentCaseLabels: false
 IndentPPDirectives: AfterHash
 IndentWidth: 3
 IndentWrappedFunctionNames: false
