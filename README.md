@@ -15,3 +15,7 @@ The Fibonacci word may be represented as a fractal as described here:
 
 # Task
 Create and display a fractal similar to Fig 1
+
+# Clang-format command line:
+```
+find . -iname *.h -o -iname *.c -o -iname *.hpp -o -iname *.cpp | xargs -clang-format -style=file -fallback-style=none -i 
