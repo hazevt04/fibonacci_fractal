@@ -275,11 +275,12 @@ static int verbose_flag;
 
 
 static struct option long_options[] = {
+   { "help", no_argument, NULL, 'h' },
    { "verbose", no_argument, NULL, 'v' },
    { "num_iterations", required_argument, NULL, 'n' },
    { "color", optional_argument, NULL, 'c' },
    { "output_file", optional_argument, NULL, 'o' },
-   { 0, 0, 0, 0 }
+   { NULL, 0, NULL, 0 }
 };   
 
 
@@ -288,7 +289,10 @@ void usage( char* argv ) {
    printf( "Options one of:\n" );
    printf( "%20s%4s%56s", 
       "--verbose", "-v", 
-      "Verbose output\n\n" );  
+      "Verbose output\n" );  
+   printf( "%20s%4s%56s", 
+      "--help", "-h", 
+      "Show this usage message.\n\n" );  
    printf( "%20s%4s%56s", 
       "--num_iterations", "-n", 
       "Number of iterations for the Fibonacci fractal\n" );  
@@ -313,18 +317,25 @@ int main( int argc, char **argv ) {
 
    char* endptr = NULL;
 
-   int error = 0;
    int option_index = 0;
    verbose_flag = 0;
-   int ch = getopt_long( argc, argv, "vn:c:o:", long_options, &option_index );
+
+   //int error_flag = 0;
+   //int help_flag = 0;
+   int ch = getopt_long( argc, argv, "hvn:c:o:", long_options, &option_index );
    while( ch != -1 ) {
       switch( ch ) {
          case 0:
             // For verbose flag
             // There is no argument after the flag in this case
+            printf( "Foo\n" );
             if ( long_options[option_index].flag != 0 ) {
                break;
             }
+            break;
+         case 'h':
+            usage( argv[0] ); 
+            exit( EXIT_SUCCESS );
             break;
          case 'v':
             verbose_flag = 1;
@@ -340,16 +351,13 @@ int main( int argc, char **argv ) {
             strcpy( output_file, optarg );
             break;
          default:
-            error = 1;
+            usage( argv[0] ); 
+            exit( EXIT_FAILURE );
             break;
       } // end of switch
       
-      if ( error ) {
-         usage( argv[0] ); 
-         exit( EXIT_FAILURE );
-      }
 
-      ch = getopt_long( argc, argv, "vn:c:o:", long_options, &option_index );
+      ch = getopt_long( argc, argv, "hvn:c:o:", long_options, &option_index );
    }
 
    VERBOSE_PRINTF( "num_iterations set to %d.\n", num_iterations );  
