@@ -301,13 +301,12 @@ static struct option long_options[] = {
 void usage( char* argv ) {
    printf( "Usage %s <options>\n", argv );
    printf( "Options one of:\n" );
-<<<<<<< HEAD
    printf( "%20s%4s%56s", 
       "--verbose", "-v", 
       "Verbose output\n" );  
    printf( "%20s%4s%56s", 
       "--help", "-h", 
-      "Show this usage message.\n\n" );  
+      "Show this usage message\n" );  
    printf( "%20s%4s%56s", 
       "--num_iterations", "-n", 
       "Number of iterations for the Fibonacci fractal\n" );  
@@ -317,24 +316,13 @@ void usage( char* argv ) {
    printf( "%20s%4s%56s", 
       "--output_file", "-n", 
       "path to the output PNG file for the fractal\n" );  
-=======
-   printf( "%20s%4s%56s", "--verbose", "-v", "Verbose output\n\n" );
-   printf( "%20s%4s%56s", "--num_iterations", "-n",
-           "Number of iterations for the Fibonacci fractal\n" );
-   printf( "%20s%4s%56s", "--output_file", "-n",
-           "path to the output PNG file for the fractal\n" );
->>>>>>> fd03b86445d9e6f6a13d90f2ef0aa19552e1aa8e
 }
 
 
 int main( int argc, char** argv ) {
    int num_iterations = 1;
-<<<<<<< HEAD
    uint32_t color = 0;   
    char title[64];
-=======
-   char title[ 64 ];
->>>>>>> fd03b86445d9e6f6a13d90f2ef0aa19552e1aa8e
    strcpy( title, "FibFractal" );
 
    char* output_file = getenv( "PWD" );
@@ -344,7 +332,6 @@ int main( int argc, char** argv ) {
    char* endptr = NULL;
 
    int option_index = 0;
-<<<<<<< HEAD
    verbose_flag = 0;
 
    //int error_flag = 0;
@@ -393,51 +380,16 @@ int main( int argc, char** argv ) {
    
    int num_chars = fib_recursive( num_iterations );
    char** fib_words = malloc(num_iterations * sizeof(char*));
-=======
-   verbose_flag     = 0;
-   int ch = getopt_long( argc, argv, "vn:o:", long_options, &option_index );
-      while ( ch != -1 ) {
-            switch ( ch ) {
-               case 0:
-                     // For verbose flag
-                     // There is no argument after the flag in this case
-                     if ( long_options[ option_index ].flag != 0 ) {
-                        break;
-                  }
-                  break;
-               case 'v':
-                  verbose_flag = 1;
-                  break;
-               case 'n':
-                  num_iterations = strtod( optarg, &endptr );
-                  break;
-               case 'o':
-                  strcpy( output_file, optarg );
-                  break;
-               default:
-                  printf( "ERROR: option %c (%d) invalid\n", ch, ch );
-                  break;
-            } // end of switch
-
-         ch = getopt_long( argc, argv, "vn:o:", long_options, &option_index );
-      }
-
-   VERBOSE_PRINTF( "num_iterations set to %d.\n", num_iterations );
-   VERBOSE_PRINTF( "output_file set to %s.\n", output_file );
-
-   int num_chars    = fib_recursive( num_iterations );
-   char** fib_words = malloc( num_iterations * sizeof( char* ) );
->>>>>>> fd03b86445d9e6f6a13d90f2ef0aa19552e1aa8e
 
    CHECK_NULL_PTR( fib_words );
 
    int fib_word_len = 1;
-      for ( int index = 0; index < num_iterations; index++ ) {
-         fib_word_len = fib_recursive( index );
-         VERBOSE_PRINTF( "fib_word_len %d is %d\n", index, fib_word_len );
-         fib_words[ index ] = calloc( ( fib_word_len + 1 ), sizeof( char ) );
-         CHECK_NULL_PTR( fib_words[ index ] );
-      }
+   for ( int index = 0; index < num_iterations; index++ ) {
+      fib_word_len = fib_recursive( index );
+      VERBOSE_PRINTF( "fib_word_len %d is %d\n", index, fib_word_len );
+      fib_words[ index ] = calloc( ( fib_word_len + 1 ), sizeof( char ) );
+      CHECK_NULL_PTR( fib_words[ index ] );
+   }
 
    // Generate Fibonacci Word
    // ======================================
@@ -455,10 +407,10 @@ int main( int argc, char** argv ) {
 
    strcpy( fib_words[ 0 ], "1" );
    strcpy( fib_words[ 1 ], "0" );
-      for ( int index = 2; index < num_iterations; index++ ) {
-         strcat( fib_words[ index ], fib_words[ index - 1 ] );
-         strcat( fib_words[ index ], fib_words[ index - 2 ] );
-      }
+   for ( int index = 2; index < num_iterations; index++ ) {
+      strcat( fib_words[ index ], fib_words[ index - 1 ] );
+      strcat( fib_words[ index ], fib_words[ index - 2 ] );
+   }
    printf( "\n" );
 
    printf( "fib_word for %d iterations is %s\n", num_iterations,
@@ -475,16 +427,6 @@ int main( int argc, char** argv ) {
       for ( int index = 0; index < fib_word_len; index++ ) {
          temp_dir = FORWARD;
          choose_direction( temp_dir );
-<<<<<<< HEAD
-      }
-   } // end of for loop
-   
-   double width = 4015.0;
-   double height = 4015.0;
-   uint32_t black = 0;
-   uint32_t white = 0xffffff;
-   uint32_t* pixels = malloc( width * height * sizeof(uint32_t) );
-=======
 
          segment_directions[ segment_index ] = prev_dir;
          segment_index++;
@@ -504,9 +446,7 @@ int main( int argc, char** argv ) {
    double height    = 4015.0;
    uint32_t black   = 0;
    uint32_t white   = 0xffffff;
-   uint32_t color   = 0;
    uint32_t* pixels = malloc( width * height * sizeof( uint32_t ) );
->>>>>>> fd03b86445d9e6f6a13d90f2ef0aa19552e1aa8e
    CHECK_NULL_PTR( pixels );
       for ( int index = 0; index < width * height; index++ ) {
          pixels[ index ] = white;
