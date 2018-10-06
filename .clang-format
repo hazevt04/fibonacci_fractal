@@ -62,7 +62,7 @@ SpacesInCStyleCastParentheses: true
 SpacesInContainerLiterals: true
 SpacesInParentheses: true
 SpacesInSquareBrackets: true
-TabWidth: 4
+TabWidth: 3
 UseTab: Never
 
 
