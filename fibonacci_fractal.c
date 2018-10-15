@@ -223,7 +223,7 @@ void draw_segment_down( uint32_t* pixels, double width, double height,
 
 static direction_e prev_dir;
 
-
+// Updates prev_dir which is static
 void choose_direction( direction_e dir ) {
    direction_e next_dir;
    char* dir_str = NULL;
@@ -435,6 +435,7 @@ int main( int argc, char** argv ) {
 
    for ( int index = 0; index < fib_word_len; index++ ) {
       temp_dir = FORWARD;
+      // updates static prev_dir
       choose_direction( temp_dir );
 
       segment_directions[ segment_index ] = prev_dir;
@@ -447,6 +448,7 @@ int main( int argc, char** argv ) {
          } else {
             temp_dir = LEFT;
          }
+         // updates static prev_dir
          choose_direction( temp_dir );
       }
    } // end of for loop
