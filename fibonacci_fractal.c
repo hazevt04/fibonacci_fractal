@@ -7,6 +7,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Generates a Fibonacci Word Fractal when given
+// a number of iterations. Output is to a PNG file.
+
+
 #define VERBOSE_PRINTF( fmt, ... )        \
    {                                      \
          if ( verbose_flag ) {            \
@@ -28,29 +32,30 @@
 
 typedef enum direction { UP, DOWN, LEFT, RIGHT, FORWARD } direction_e;
 
+
 void print_dir( direction_e dir ) {
-      if ( dir == UP ) {
-         printf( "UP" );
-      } else if ( dir == DOWN ) {
-         printf( "DOWN" );
-      } else if ( dir == LEFT ) {
-         printf( "LEFT" );
-      } else if ( dir == RIGHT ) {
-         printf( "RIGHT" );
-      } else if ( dir == FORWARD ) {
-         printf( "FORWARD" );
-      } else {
-         printf( "<INVALID>" );
-      }
+   if ( dir == UP ) {
+      printf( "UP" );
+   } else if ( dir == DOWN ) {
+      printf( "DOWN" );
+   } else if ( dir == LEFT ) {
+      printf( "LEFT" );
+   } else if ( dir == RIGHT ) {
+      printf( "RIGHT" );
+   } else if ( dir == FORWARD ) {
+      printf( "FORWARD" );
+   } else {
+      printf( "<INVALID>" );
+   }
 }
 
 
 int fib_recursive( int n ) {
-      if ( n < 2 ) {
-         return 1;
-      } else {
-         return fib_recursive( n - 1 ) + fib_recursive( n - 2 );
-      }
+   if ( n < 2 ) {
+      return 1;
+   } else {
+      return fib_recursive( n - 1 ) + fib_recursive( n - 2 );
+   }
 }
 
 
@@ -77,33 +82,33 @@ int write_image( char* filename, int width, int height, uint32_t* buffer,
 
    // Open file for writing (binary mode)
    fp = fopen( filename, "wb" );
-      if ( fp == NULL ) {
-         fprintf( stderr, "Could not open file %s for writing\n", filename );
-         code = 1;
-         goto finalise;
+   if ( fp == NULL ) {
+      fprintf( stderr, "Could not open file %s for writing\n", filename );
+      code = 1;
+      goto finalise;
    }
 
    // Initialize write structure
    png_ptr = png_create_write_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL );
-      if ( png_ptr == NULL ) {
-         fprintf( stderr, "Could not allocate write struct\n" );
-         code = 1;
-         goto finalise;
+   if ( png_ptr == NULL ) {
+      fprintf( stderr, "Could not allocate write struct\n" );
+      code = 1;
+      goto finalise;
    }
 
    // Initialize info structure
    info_ptr = png_create_info_struct( png_ptr );
-      if ( info_ptr == NULL ) {
-         fprintf( stderr, "Could not allocate info struct\n" );
-         code = 1;
-         goto finalise;
+   if ( info_ptr == NULL ) {
+      fprintf( stderr, "Could not allocate info struct\n" );
+      code = 1;
+      goto finalise;
    }
 
-      // Setup Exception handling
-      if ( setjmp( png_jmpbuf( png_ptr ) ) ) {
-         fprintf( stderr, "Error during png creation\n" );
-         code = 1;
-         goto finalise;
+   // Setup Exception handling
+   if ( setjmp( png_jmpbuf( png_ptr ) ) ) {
+      fprintf( stderr, "Error during png creation\n" );
+      code = 1;
+      goto finalise;
    }
 
    png_init_io( png_ptr, fp );
@@ -114,12 +119,12 @@ int write_image( char* filename, int width, int height, uint32_t* buffer,
                  PNG_FILTER_TYPE_BASE );
 
       // Set title
-      if ( title != NULL ) {
-         png_text title_text;
-         title_text.compression = PNG_TEXT_COMPRESSION_NONE;
-         title_text.key         = "Title";
-         title_text.text        = title;
-         png_set_text( png_ptr, info_ptr, &title_text, 1 );
+   if ( title != NULL ) {
+      png_text title_text;
+      title_text.compression = PNG_TEXT_COMPRESSION_NONE;
+      title_text.key         = "Title";
+      title_text.text        = title;
+      png_set_text( png_ptr, info_ptr, &title_text, 1 );
    }
 
    png_write_info( png_ptr, info_ptr );
@@ -129,12 +134,12 @@ int write_image( char* filename, int width, int height, uint32_t* buffer,
 
    // Write image data
    int x, y;
-      for ( y = 0; y < height; y++ ) {
-            for ( x = 0; x < width; x++ ) {
-               set_rgb( &( row[ x * 3 ] ), buffer[ y * width + x ] );
-            }
-         png_write_row( png_ptr, row );
+   for ( y = 0; y < height; y++ ) {
+      for ( x = 0; x < width; x++ ) {
+         set_rgb( &( row[ x * 3 ] ), buffer[ y * width + x ] );
       }
+      png_write_row( png_ptr, row );
+   }
 
    // End write
    png_write_end( png_ptr, NULL );
@@ -160,11 +165,11 @@ void draw_segment_right( uint32_t* pixels, double width, double height,
    int index             = 0;
    int max_overall_index = ( int )width * ( int )height;
    int last_index        = ( int )( start_index + length );
-      for ( index = start_index; index < last_index; index++ ) {
-            if ( ( index >= 0 ) && ( index < max_overall_index ) ) {
-               pixels[ index ] = color;
-         }
+   for ( index = start_index; index < last_index; index++ ) {
+      if ( ( index >= 0 ) && ( index < max_overall_index ) ) {
+         pixels[ index ] = color;
       }
+   }
    *end_index = last_index;
 }
 
@@ -176,11 +181,11 @@ void draw_segment_left( uint32_t* pixels, double width, double height,
    int index             = 0;
    int max_overall_index = ( int )width * ( int )height;
    int last_index        = ( int )( start_index - length );
-      for ( index = start_index; index >= last_index; index-- ) {
-            if ( ( index >= 0 ) && ( index < max_overall_index ) ) {
-               pixels[ index ] = color;
-         }
+   for ( index = start_index; index >= last_index; index-- ) {
+      if ( ( index >= 0 ) && ( index < max_overall_index ) ) {
+         pixels[ index ] = color;
       }
+   }
    *end_index = last_index;
 }
 
@@ -192,11 +197,11 @@ void draw_segment_up( uint32_t* pixels, double width, double height,
    int index             = 0;
    int max_overall_index = ( int )width * ( int )height;
    int last_index        = ( int )( start_index - ( length * ( int )width ) );
-      for ( index = start_index; index > last_index; index -= ( int )width ) {
-            if ( ( index >= 0 ) && ( index < max_overall_index ) ) {
-               pixels[ index ] = color;
-         }
+   for ( index = start_index; index > last_index; index -= ( int )width ) {
+      if ( ( index >= 0 ) && ( index < max_overall_index ) ) {
+         pixels[ index ] = color;
       }
+   }
    *end_index = index;
 }
 
@@ -208,11 +213,11 @@ void draw_segment_down( uint32_t* pixels, double width, double height,
    int index             = 0;
    int max_overall_index = ( int )width * ( int )height;
    int last_index        = ( int )( start_index + ( length * ( int )width ) );
-      for ( index = start_index; index < last_index; index += ( int )width ) {
-            if ( ( index >= 0 ) && ( index < max_overall_index ) ) {
-               pixels[ index ] = color;
-         }
+   for ( index = start_index; index < last_index; index += ( int )width ) {
+      if ( ( index >= 0 ) && ( index < max_overall_index ) ) {
+         pixels[ index ] = color;
       }
+   }
    *end_index = index;
 }
 
@@ -222,66 +227,66 @@ static direction_e prev_dir;
 void choose_direction( direction_e dir ) {
    direction_e next_dir;
    char* dir_str = NULL;
-      switch ( prev_dir ) {
-         case UP:
-               if ( dir == FORWARD ) {
-                  next_dir = prev_dir;
-               } else if ( dir != DOWN ) {
-                  next_dir = dir;
-               } else {
-                  printf( "ERROR: prev dir is UP" );
-                  printf( "Invalid input direction " );
-                  print_dir( dir );
-                  printf( "\n" );
-                  exit( EXIT_FAILURE );
-               }
-            break;
-         case DOWN:
-               if ( dir == LEFT ) {
-                  next_dir = RIGHT;
-               } else if ( dir == RIGHT ) {
-                  next_dir = LEFT;
-               } else if ( dir == FORWARD || dir == DOWN ) {
-                  next_dir = prev_dir;
-               } else {
-                  printf( "ERROR: prev dir is DOWN" );
-                  printf( "Invalid input direction " );
-                  print_dir( dir );
-                  printf( "\n" );
-                  exit( EXIT_FAILURE );
-               }
-            break;
-         case LEFT:
-               if ( dir == RIGHT ) {
-                  next_dir = UP;
-               } else if ( dir == LEFT ) {
-                  next_dir = DOWN;
-               } else if ( dir == FORWARD ) {
-                  next_dir = prev_dir;
-               } else {
-                  printf( "ERROR: prev dir is LEFT" );
-                  printf( "Invalid input direction " );
-                  print_dir( dir );
-                  printf( "\n" );
-                  exit( EXIT_FAILURE );
-               }
-            break;
-         case RIGHT:
-               if ( dir == LEFT ) {
-                  next_dir = UP;
-               } else if ( dir == RIGHT ) {
-                  next_dir = DOWN;
-               } else if ( dir == FORWARD ) {
-                  next_dir = prev_dir;
-               } else {
-                  printf( "ERROR: prev dir is RIGHT" );
-                  printf( "Invalid input direction " );
-                  print_dir( dir );
-                  printf( "\n" );
-                  exit( EXIT_FAILURE );
-               }
-            break;
-      } //
+   switch ( prev_dir ) {
+      case UP:
+         if ( dir == FORWARD ) {
+            next_dir = prev_dir;
+         } else if ( dir != DOWN ) {
+            next_dir = dir;
+         } else {
+            printf( "ERROR: prev dir is UP" );
+            printf( "Invalid input direction " );
+            print_dir( dir );
+            printf( "\n" );
+            exit( EXIT_FAILURE );
+         }
+         break;
+      case DOWN:
+         if ( dir == LEFT ) {
+            next_dir = RIGHT;
+         } else if ( dir == RIGHT ) {
+            next_dir = LEFT;
+         } else if ( dir == FORWARD || dir == DOWN ) {
+            next_dir = prev_dir;
+         } else {
+            printf( "ERROR: prev dir is DOWN" );
+            printf( "Invalid input direction " );
+            print_dir( dir );
+            printf( "\n" );
+            exit( EXIT_FAILURE );
+         }
+         break;
+      case LEFT:
+         if ( dir == RIGHT ) {
+            next_dir = UP;
+         } else if ( dir == LEFT ) {
+            next_dir = DOWN;
+         } else if ( dir == FORWARD ) {
+            next_dir = prev_dir;
+         } else {
+            printf( "ERROR: prev dir is LEFT" );
+            printf( "Invalid input direction " );
+            print_dir( dir );
+            printf( "\n" );
+            exit( EXIT_FAILURE );
+         }
+         break;
+      case RIGHT:
+         if ( dir == LEFT ) {
+            next_dir = UP;
+         } else if ( dir == RIGHT ) {
+            next_dir = DOWN;
+         } else if ( dir == FORWARD ) {
+            next_dir = prev_dir;
+         } else {
+            printf( "ERROR: prev dir is RIGHT" );
+            printf( "Invalid input direction " );
+            print_dir( dir );
+            printf( "\n" );
+            exit( EXIT_FAILURE );
+         }
+         break;
+   } // end of switch
    prev_dir = next_dir;
 }
 
@@ -370,7 +375,6 @@ int main( int argc, char** argv ) {
             break;
       } // end of switch
       
-
       ch = getopt_long( argc, argv, "hvn:c:o:", long_options, &option_index );
    }
 
@@ -424,23 +428,23 @@ int main( int argc, char** argv ) {
    CHECK_NULL_PTR( segment_directions );
    int segment_index = 0;
 
-      for ( int index = 0; index < fib_word_len; index++ ) {
-         temp_dir = FORWARD;
-         choose_direction( temp_dir );
+   for ( int index = 0; index < fib_word_len; index++ ) {
+      temp_dir = FORWARD;
+      choose_direction( temp_dir );
 
-         segment_directions[ segment_index ] = prev_dir;
-         segment_index++;
+      segment_directions[ segment_index ] = prev_dir;
+      segment_index++;
 
-            if ( fib_words[ num_iterations - 1 ][ index ] == '0' ) {
-                  // If odd
-                  if ( ( index + 1 ) & 1 ) {
-                     temp_dir = RIGHT;
-                  } else {
-                     temp_dir = LEFT;
-                  }
-               choose_direction( temp_dir );
+      if ( fib_words[ num_iterations - 1 ][ index ] == '0' ) {
+         // If odd
+         if ( ( index + 1 ) & 1 ) {
+            temp_dir = RIGHT;
+         } else {
+            temp_dir = LEFT;
          }
-      } // end of for loop
+         choose_direction( temp_dir );
+      }
+   } // end of for loop
 
    double width     = 4015.0;
    double height    = 4015.0;
@@ -448,40 +452,40 @@ int main( int argc, char** argv ) {
    uint32_t white   = 0xffffff;
    uint32_t* pixels = malloc( width * height * sizeof( uint32_t ) );
    CHECK_NULL_PTR( pixels );
-      for ( int index = 0; index < width * height; index++ ) {
-         pixels[ index ] = white;
-      }
+   for ( int index = 0; index < width * height; index++ ) {
+      pixels[ index ] = white;
+   }
 
-   int start_index = ( ( int )width * ( height - 15 ) ) + 15;
+   int start_index = ( ( int )width * ( ( int )height - 15 ) ) + 15;
    int end_index;
    int length   = 5;
    int prev_dir = 0;
 
-      for ( int index = 0; index < fib_word_len; index++ ) {
-         direction_e temp_dir = segment_directions[ index ];
-            if ( temp_dir == UP ) {
-               draw_segment_up( pixels, width, height, start_index, &end_index,
-                                length, color );
-            } else if ( temp_dir == DOWN ) {
-               draw_segment_down( pixels, width, height, start_index,
-                                  &end_index, length, color );
-            } else if ( temp_dir == LEFT ) {
-               draw_segment_left( pixels, width, height, start_index,
-                                  &end_index, length, color );
-            } else {
-               draw_segment_right( pixels, width, height, start_index,
-                                   &end_index, length, color );
-            }
-         start_index = end_index;
+   for ( int index = 0; index < fib_word_len; index++ ) {
+      direction_e temp_dir = segment_directions[ index ];
+      if ( temp_dir == UP ) {
+         draw_segment_up( pixels, width, height, start_index, &end_index,
+                          length, color );
+      } else if ( temp_dir == DOWN ) {
+         draw_segment_down( pixels, width, height, start_index,
+                            &end_index, length, color );
+      } else if ( temp_dir == LEFT ) {
+         draw_segment_left( pixels, width, height, start_index,
+                            &end_index, length, color );
+      } else {
+         draw_segment_right( pixels, width, height, start_index,
+                             &end_index, length, color );
       }
+      start_index = end_index;
+   }
 
    printf( "Saving PNG to %s...\n", output_file );
    write_image( output_file, width, height, pixels, title );
    printf( "DONE.\n\n" );
 
-      for ( int index = 0; index < num_iterations; index++ ) {
-         free( fib_words[ index ] );
-      }
+   for ( int index = 0; index < num_iterations; index++ ) {
+      free( fib_words[ index ] );
+   }
    free( fib_words );
    free( segment_directions );
    free( pixels );
