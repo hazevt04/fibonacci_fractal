@@ -347,7 +347,6 @@ int main( int argc, char** argv ) {
          case 0:
             // For verbose flag
             // There is no argument after the flag in this case
-            printf( "Foo\n" );
             if ( long_options[option_index].flag != 0 ) {
                break;
             }
@@ -376,14 +375,14 @@ int main( int argc, char** argv ) {
       } // end of switch
       
       ch = getopt_long( argc, argv, "hvn:c:o:", long_options, &option_index );
-   }
+   } // end of while loop
 
    VERBOSE_PRINTF( "num_iterations set to %d.\n", num_iterations );  
    VERBOSE_PRINTF( "color set to %0x.\n", color );  
    VERBOSE_PRINTF( "output_file set to %s.\n", output_file );  
    
    int num_chars = fib_recursive( num_iterations );
-   char** fib_words = malloc(num_iterations * sizeof(char*));
+   char** fib_words = malloc( num_iterations * sizeof( char* ) );
 
    CHECK_NULL_PTR( fib_words );
 
@@ -409,13 +408,19 @@ int main( int argc, char** argv ) {
    // f7 = 0100101001001
    // ...
 
-   strcpy( fib_words[ 0 ], "1" );
-   strcpy( fib_words[ 1 ], "0" );
-   for ( int index = 2; index < num_iterations; index++ ) {
-      strcat( fib_words[ index ], fib_words[ index - 1 ] );
-      strcat( fib_words[ index ], fib_words[ index - 2 ] );
-   }
-   printf( "\n" );
+   if ( num_iterations > 2 ) {
+      strcpy( fib_words[ 0 ], "1" );
+      strcpy( fib_words[ 1 ], "0" );
+      for ( int index = 2; index < num_iterations; index++ ) {
+         strcat( fib_words[ index ], fib_words[ index - 1 ] );
+         strcat( fib_words[ index ], fib_words[ index - 2 ] );
+      }
+   } else if ( num_iterations == 2 ) {
+      strcpy( fib_words[ 0 ], "1" );
+      strcpy( fib_words[ 1 ], "0" );
+   } else {
+      strcpy( fib_words[ 0 ], "1" );
+   } 
 
    printf( "fib_word for %d iterations is %s\n", num_iterations,
            fib_words[ num_iterations - 1 ] );
