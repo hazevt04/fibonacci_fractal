@@ -50,14 +50,17 @@ void print_dir( direction_e dir ) {
 }
 
 
-int fib_recursive( int n ) {
-   if ( n < 2 ) {
+int fib_recursive( int num ) {
+   if ( num < 2 ) {
       return 1;
    } else {
-      return fib_recursive( n - 1 ) + fib_recursive( n - 2 );
+      return fib_recursive( num - 1 ) + fib_recursive( num - 2 );
    }
 }
 
+unsigned long fib_recursive_memoized( unsigned long* table, unsigned long num ) {
+   
+}
 
 // Let's let val be 687. MAIN COLOR is val/768
 // This takes the float value 'val', converts it to red, green & blue values,
