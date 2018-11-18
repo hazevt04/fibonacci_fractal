@@ -49,18 +49,35 @@ void print_dir( direction_e dir ) {
    }
 }
 
-
-unsigned long fib_recursive( unsigned long num ) {
+/*
+unsigned long  fib_recursive( unsigned num ) {
    if ( num < 2 ) {
       return 1;
    } else {
       return fib_recursive( num - 1 ) + fib_recursive( num - 2 );
    }
 }
+*/
 
 unsigned long fib_recursive_memoized( unsigned long* table, unsigned long num ) {
-   
+   unsigned long result;
+   if ( num  < 2 ) {
+      return 1;
+   } else {
+      // If Fib(num) is in the table
+		// return it
+      if ( 0 != table[ num ] ) {
+         return table[ num ];
+      } else {
+			// Fib(num) not in table; calculate it.
+         result = fib_recursive_memoized( table, ( num - 1 ) ) +
+            fib_recursive_memoized( table, ( num - 2 ) );
+         table[ num ] = result;
+         return result;
+      } // end of else if table[num] == 0
+   } // end of else num >= 2
 }
+
 
 // Let's let val be 687. MAIN COLOR is val/768
 // This takes the float value 'val', converts it to red, green & blue values,
@@ -391,14 +408,17 @@ int main( int argc, char** argv ) {
    VERBOSE_PRINTF( "color set to %0x.\n", color );  
    VERBOSE_PRINTF( "output_file set to %s.\n", output_file );  
    
-   unsigned long num_chars = fib_recursive( num_iterations );
-   char** fib_words = malloc( num_iterations * sizeof( char* ) );
+	unsigned long* fib_len_table = ( unsigned long* )calloc( num_iterations, sizeof( unsigned long ) );
+   CHECK_NULL_PTR( fib_len_table );
 
+   unsigned long num_chars = fib_recursive_memoized( fib_len_table, num_iterations );
+
+   char** fib_words = malloc( num_iterations * sizeof( char* ) );
    CHECK_NULL_PTR( fib_words );
 
    unsigned long fib_word_len = 1;
    for ( unsigned long index = 0; index < num_iterations; index++ ) {
-      fib_word_len = fib_recursive( index );
+      fib_word_len = fib_recursive_memoized( fib_len_table, index );
       VERBOSE_PRINTF( "fib_word_len %lu is %lu\n", index, fib_word_len );
       fib_words[ index ] = calloc( ( fib_word_len + 1 ), sizeof( char ) );
       CHECK_NULL_PTR( fib_words[ index ] );
@@ -470,24 +490,26 @@ int main( int argc, char** argv ) {
    uint32_t white   = 0xffffff;
    uint32_t* pixels = malloc( area * sizeof( uint32_t ) );
    CHECK_NULL_PTR( pixels );
-   for ( unsigned long index = 0; index < (unsigned long)area; index++ ) {
+   for ( unsigned long index = 0; index < ( unsigned long )area; index++ ) {
       pixels[ index ] = white;
    }
 
    unsigned long start_index = ( ( unsigned long )width * ( ( unsigned long )height - 15 ) ) + 15;
    unsigned long end_index;
    unsigned long length   = 5;
-   int prev_dir = 0;
 
-   for ( unsigned long index = 0; index < fib_word_len; index++ ) {
-      direction_e temp_dir = segment_directions[ index ];
-      if ( temp_dir == UP ) {
-         draw_segment_up( pixels, width, height, start_index, &end_index,
-                          length, color );
-      } else if ( temp_dir == DOWN ) {
+	int prev_dir = 0;
+	
+	for ( unsigned long index = 0; index < fib_word_len; index++ ) {
+		direction_e temp_dir = segment_directions[ index ];
+
+		if ( temp_dir == UP ) {
+         draw_segment_up( pixels, width, height, start_index,
+                            &end_index, length, color );
+		} else if ( temp_dir == DOWN ) {
          draw_segment_down( pixels, width, height, start_index,
                             &end_index, length, color );
-      } else if ( temp_dir == LEFT ) {
+		} else if ( temp_dir == LEFT ) {
          draw_segment_left( pixels, width, height, start_index,
                             &end_index, length, color );
       } else {
@@ -504,7 +526,9 @@ int main( int argc, char** argv ) {
    for ( unsigned long index = 0; index < num_iterations; index++ ) {
       free( fib_words[ index ] );
    }
+   free( fib_len_table );
    free( fib_words );
    free( segment_directions );
    free( pixels );
+   exit( EXIT_SUCCESS );
 }
