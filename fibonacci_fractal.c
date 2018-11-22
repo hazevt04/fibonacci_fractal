@@ -417,12 +417,18 @@ int main( int argc, char** argv ) {
    CHECK_NULL_PTR( fib_words );
 
    unsigned long fib_word_len = 1;
-   for ( unsigned long index = 0; index < num_iterations; index++ ) {
+   unsigned long prev_fib_word_len = 1; 
+	for ( unsigned long index = 0; index < num_iterations; index++ ) {
       fib_word_len = fib_recursive_memoized( fib_len_table, index );
       VERBOSE_PRINTF( "fib_word_len %lu is %lu\n", index, fib_word_len );
+
+		if ( index == ( num_iterations - 2 ) ) {
+			prev_fib_word_len = fib_word_len;
+		}
       fib_words[ index ] = calloc( ( fib_word_len + 1 ), sizeof( char ) );
       CHECK_NULL_PTR( fib_words[ index ] );
    }
+	
 
    // Generate Fibonacci Word
    // ======================================
@@ -483,8 +489,10 @@ int main( int argc, char** argv ) {
       }
    } // end of for loop
 
-   double width     = 4015.0;
-   double height    = 4015.0;
+	// For num_iterations=23, I need the image to be wider
+	// TODO: Make this resize the drawing
+   double width     = 8030.0;
+   double height    = 3515.0;
    double area  = width * height;
    uint32_t black   = 0;
    uint32_t white   = 0xffffff;
@@ -500,9 +508,15 @@ int main( int argc, char** argv ) {
 
 	int prev_dir = 0;
 	
+	
 	for ( unsigned long index = 0; index < fib_word_len; index++ ) {
 		direction_e temp_dir = segment_directions[ index ];
 
+		if ( index < prev_fib_word_len ) {
+			color = black;
+		} else {
+			color = 0xff0000;
+		}
 		if ( temp_dir == UP ) {
          draw_segment_up( pixels, width, height, start_index,
                             &end_index, length, color );
