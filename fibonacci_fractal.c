@@ -32,7 +32,6 @@
 
 typedef enum direction { UP, DOWN, LEFT, RIGHT, FORWARD } direction_e;
 
-
 void print_dir( direction_e dir ) {
    if ( dir == UP ) {
       printf( "UP" );
@@ -49,8 +48,8 @@ void print_dir( direction_e dir ) {
    }
 }
 
-unsigned long fib_recursive_memoized( unsigned long* table, unsigned long num ) {
-   unsigned long result;
+ulong fib_recursive_memoized( ulong* table, ulong num ) {
+   ulong result;
    if ( num  < 2 ) {
       return 1;
    } else {
@@ -73,7 +72,7 @@ unsigned long fib_recursive_memoized( unsigned long* table, unsigned long num ) 
 // This takes the float value 'val', converts it to red, green & blue values,
 // then sets those values into the image memory buffer location pointed to by
 // 'ptr'
-void set_rgb( png_byte* ptr, unsigned long val ) {
+void set_rgb( png_byte* ptr, ulong val ) {
    ptr[ 0 ] = ( val >> 16 ) & 0xFFUL;
    ptr[ 1 ] = ( val >> 8 ) & 0xFFUL;
    ptr[ 2 ] = ( val ) & 0xFFUL;
@@ -82,7 +81,7 @@ void set_rgb( png_byte* ptr, unsigned long val ) {
 
 // This function actually writes out the PNG image file. The string 'title' is
 // also written into the image file
-int write_image( char* filename, int width, int height, unsigned long* buffer,
+int write_image( char* filename, int width, int height, ulong* buffer,
                  char* title ) {
    int code            = 0;
    FILE* fp            = NULL;
@@ -168,13 +167,13 @@ finalise:
 } // end of write_image()
 
 
-void draw_segment_right( unsigned long* pixels, unsigned long width, unsigned long height,
-                         unsigned long start_index, unsigned long* end_index, unsigned long length,
-                         unsigned long color ) {
+void draw_segment_right( ulong* pixels, ulong width, ulong height,
+                         ulong start_index, ulong* end_index, ulong length,
+                         ulong color ) {
 
-   unsigned long index             = 0;
-   unsigned long max_overall_index = width * height;
-   unsigned long last_index        = ( start_index + length );
+   ulong index             = 0;
+   ulong max_overall_index = width * height;
+   ulong last_index        = ( start_index + length );
    for ( index = start_index; index < last_index; index++ ) {
       if ( ( index >= 0 ) && ( index < max_overall_index ) ) {
          pixels[ index ] = color;
@@ -184,13 +183,13 @@ void draw_segment_right( unsigned long* pixels, unsigned long width, unsigned lo
 }
 
 
-void draw_segment_left( unsigned long* pixels, unsigned long width, unsigned long height,
-                        unsigned long start_index, unsigned long* end_index, unsigned long length,
-                        unsigned long color ) {
+void draw_segment_left( ulong* pixels, ulong width, ulong height,
+                        ulong start_index, ulong* end_index, ulong length,
+                        ulong color ) {
 
-   unsigned long index             = 0;
-   unsigned long max_overall_index = width * height;
-   unsigned long last_index        = start_index;
+   ulong index             = 0;
+   ulong max_overall_index = width * height;
+   ulong last_index        = start_index;
 
    if ( start_index > length ) {
       last_index = ( start_index - length );
@@ -204,13 +203,13 @@ void draw_segment_left( unsigned long* pixels, unsigned long width, unsigned lon
 }
 
 
-void draw_segment_up( unsigned long* pixels, unsigned long width, unsigned long height,
-                      unsigned long start_index, unsigned long* end_index, unsigned long length,
-                      unsigned long color ) {
+void draw_segment_up( ulong* pixels, ulong width, ulong height,
+                      ulong start_index, ulong* end_index, ulong length,
+                      ulong color ) {
 
-   unsigned long index             = 0;
-   unsigned long max_overall_index = width * height;
-   unsigned long last_index        = start_index;
+   ulong index             = 0;
+   ulong max_overall_index = width * height;
+   ulong last_index        = start_index;
    if ( start_index > ( length * width ) ) {
       last_index        = ( start_index - ( length * width ) );
       for ( index = start_index; index > last_index; index -= width ) {
@@ -223,13 +222,13 @@ void draw_segment_up( unsigned long* pixels, unsigned long width, unsigned long 
 }
 
 
-void draw_segment_down( unsigned long* pixels, unsigned long width, unsigned long height,
-                        unsigned long start_index, unsigned long* end_index, unsigned long length,
-                        unsigned long color ) {
+void draw_segment_down( ulong* pixels, ulong width, ulong height,
+                        ulong start_index, ulong* end_index, ulong length,
+                        ulong color ) {
 
-   unsigned long index             = 0;
-   unsigned long max_overall_index = width * height;
-   unsigned long last_index        = ( unsigned long )( start_index + ( length * width ) );
+   ulong index             = 0;
+   ulong max_overall_index = width * height;
+   ulong last_index        = ( ulong )( start_index + ( length * width ) );
    for ( index = start_index; index < last_index; index += width ) {
       if ( ( index >= 0 ) && ( index < max_overall_index ) ) {
          pixels[ index ] = color;
@@ -342,12 +341,12 @@ void usage( char* argv ) {
 
 
 int main( int argc, char** argv ) {
-   const unsigned long BLACK = 0x00000000;
-   const unsigned long RED	= 0x00ff0000;
-   const unsigned long BLUE	= 0x000000ff;
-   const unsigned long WHITE = 0x00ffffff;
-   unsigned long color = 0;   
-   unsigned long index = 0;
+   const ulong BLACK = 0x00000000;
+   const ulong RED	= 0x00ff0000;
+   const ulong BLUE	= 0x000000ff;
+   const ulong WHITE = 0x00ffffff;
+   ulong color = 0;   
+   ulong index = 0;
 
    char title[64];
    strcpy( title, "FibFractal" );
@@ -356,7 +355,7 @@ int main( int argc, char** argv ) {
    CHECK_NULL_PTR( output_file );
    strcat( output_file, "/fib_fractal.png" );
 
-   unsigned long num_iterations = 1;
+   ulong num_iterations = 1;
    char* endptr = NULL;
 
    int option_index = 0;
@@ -404,16 +403,16 @@ int main( int argc, char** argv ) {
    VERBOSE_PRINTF( "color set to %0lx.\n", color );  
    VERBOSE_PRINTF( "output_file set to %s.\n", output_file );  
    
-	unsigned long* fib_len_table = ( unsigned long* )calloc( num_iterations, sizeof( unsigned long ) );
+	ulong* fib_len_table = ( ulong* )calloc( num_iterations, sizeof( ulong ) );
    CHECK_NULL_PTR( fib_len_table );
 
-   unsigned long num_chars = fib_recursive_memoized( fib_len_table, num_iterations );
+   ulong num_chars = fib_recursive_memoized( fib_len_table, num_iterations );
 
    char** fib_words = malloc( num_iterations * sizeof( char* ) );
    CHECK_NULL_PTR( fib_words );
 
-   unsigned long fib_word_len = 1;
-   unsigned long prev_fib_word_len = 1; 
+   ulong fib_word_len = 1;
+   ulong prev_fib_word_len = 1; 
 	for ( index = 0; index < num_iterations; index++ ) {
       fib_word_len = fib_recursive_memoized( fib_len_table, index );
       VERBOSE_PRINTF( "fib_word_len %lu is %lu\n", index, fib_word_len );
@@ -462,7 +461,7 @@ int main( int argc, char** argv ) {
    direction_e* segment_directions =
       malloc( ( fib_word_len ) * sizeof( direction_e ) );
    CHECK_NULL_PTR( segment_directions );
-   unsigned long segment_index = 0;
+   ulong segment_index = 0;
 
    for ( long index = 0; index < fib_word_len; index++ ) {
       temp_dir = FORWARD;
@@ -486,18 +485,18 @@ int main( int argc, char** argv ) {
 
 	// For num_iterations=23, I need the image to be wider
 	// TODO: Make this resize the drawing
-   unsigned long width     = 16530;
-   unsigned long height    = 16530;
-   unsigned long num_pixels  = width * height;
-   unsigned long* pixels = malloc( num_pixels * sizeof( unsigned long ) );
+   ulong width     = 16530;
+   ulong height    = 16530;
+   ulong num_pixels  = width * height;
+   ulong* pixels = malloc( num_pixels * sizeof( ulong ) );
    CHECK_NULL_PTR( pixels );
    for ( index = 0; index < num_pixels; index++ ) {
       pixels[ index ] = WHITE;
    }
 
-   unsigned long start_index = ( width * ( height - 15 ) ) + 15;
-   unsigned long end_index;
-   unsigned long length   = 5;
+   ulong start_index = ( width * ( height - 15 ) ) + 15;
+   ulong end_index;
+   ulong length   = 5;
 
 	int prev_dir = 0;
 	
