@@ -49,16 +49,6 @@ void print_dir( direction_e dir ) {
    }
 }
 
-/*
-unsigned long  fib_recursive( unsigned num ) {
-   if ( num < 2 ) {
-      return 1;
-   } else {
-      return fib_recursive( num - 1 ) + fib_recursive( num - 2 );
-   }
-}
-*/
-
 unsigned long fib_recursive_memoized( unsigned long* table, unsigned long num ) {
    unsigned long result;
    if ( num  < 2 ) {
@@ -83,7 +73,7 @@ unsigned long fib_recursive_memoized( unsigned long* table, unsigned long num ) 
 // This takes the float value 'val', converts it to red, green & blue values,
 // then sets those values into the image memory buffer location pointed to by
 // 'ptr'
-void set_rgb( png_byte* ptr, uint32_t val ) {
+void set_rgb( png_byte* ptr, unsigned long val ) {
    ptr[ 0 ] = ( val >> 16 ) & 0xFFUL;
    ptr[ 1 ] = ( val >> 8 ) & 0xFFUL;
    ptr[ 2 ] = ( val ) & 0xFFUL;
@@ -92,7 +82,7 @@ void set_rgb( png_byte* ptr, uint32_t val ) {
 
 // This function actually writes out the PNG image file. The string 'title' is
 // also written into the image file
-int write_image( char* filename, int width, int height, uint32_t* buffer,
+int write_image( char* filename, int width, int height, unsigned long* buffer,
                  char* title ) {
    int code            = 0;
    FILE* fp            = NULL;
@@ -178,12 +168,12 @@ finalise:
 } // end of write_image()
 
 
-void draw_segment_right( uint32_t* pixels, double width, double height,
+void draw_segment_right( unsigned long* pixels, unsigned long width, unsigned long height,
                          unsigned long start_index, unsigned long* end_index, unsigned long length,
-                         uint32_t color ) {
+                         unsigned long color ) {
 
    unsigned long index             = 0;
-   unsigned long max_overall_index = ( unsigned long )width * ( unsigned long )height;
+   unsigned long max_overall_index = width * height;
    unsigned long last_index        = ( start_index + length );
    for ( index = start_index; index < last_index; index++ ) {
       if ( ( index >= 0 ) && ( index < max_overall_index ) ) {
@@ -194,12 +184,12 @@ void draw_segment_right( uint32_t* pixels, double width, double height,
 }
 
 
-void draw_segment_left( uint32_t* pixels, double width, double height,
+void draw_segment_left( unsigned long* pixels, unsigned long width, unsigned long height,
                         unsigned long start_index, unsigned long* end_index, unsigned long length,
-                        uint32_t color ) {
+                        unsigned long color ) {
 
    unsigned long index             = 0;
-   unsigned long max_overall_index = ( unsigned long )width * ( unsigned long )height;
+   unsigned long max_overall_index = width * height;
    unsigned long last_index        = start_index;
 
    if ( start_index > length ) {
@@ -214,16 +204,16 @@ void draw_segment_left( uint32_t* pixels, double width, double height,
 }
 
 
-void draw_segment_up( uint32_t* pixels, double width, double height,
+void draw_segment_up( unsigned long* pixels, unsigned long width, unsigned long height,
                       unsigned long start_index, unsigned long* end_index, unsigned long length,
-                      uint32_t color ) {
+                      unsigned long color ) {
 
    unsigned long index             = 0;
-   unsigned long max_overall_index = ( unsigned long )width * ( unsigned long )height;
+   unsigned long max_overall_index = width * height;
    unsigned long last_index        = start_index;
-   if ( start_index > ( length * ( unsigned long )width ) ) {
-      last_index        = ( unsigned long )( start_index - ( length * ( unsigned long )width ) );
-      for ( index = start_index; index > last_index; index -= ( unsigned long )width ) {
+   if ( start_index > ( length * width ) ) {
+      last_index        = ( start_index - ( length * width ) );
+      for ( index = start_index; index > last_index; index -= width ) {
          if ( ( index >= 0 ) && ( index < max_overall_index ) ) {
             pixels[ index ] = color;
          }
@@ -233,14 +223,14 @@ void draw_segment_up( uint32_t* pixels, double width, double height,
 }
 
 
-void draw_segment_down( uint32_t* pixels, double width, double height,
+void draw_segment_down( unsigned long* pixels, unsigned long width, unsigned long height,
                         unsigned long start_index, unsigned long* end_index, unsigned long length,
-                        uint32_t color ) {
+                        unsigned long color ) {
 
    unsigned long index             = 0;
-   unsigned long max_overall_index = ( unsigned long )width * ( unsigned long )height;
-   unsigned long last_index        = ( unsigned long )( start_index + ( length * ( unsigned long )width ) );
-   for ( index = start_index; index < last_index; index += ( unsigned long )width ) {
+   unsigned long max_overall_index = width * height;
+   unsigned long last_index        = ( unsigned long )( start_index + ( length * width ) );
+   for ( index = start_index; index < last_index; index += width ) {
       if ( ( index >= 0 ) && ( index < max_overall_index ) ) {
          pixels[ index ] = color;
       }
@@ -352,8 +342,13 @@ void usage( char* argv ) {
 
 
 int main( int argc, char** argv ) {
-   unsigned long num_iterations = 1;
-   uint32_t color = 0;   
+   const unsigned long BLACK = 0x00000000;
+   const unsigned long RED	= 0x00ff0000;
+   const unsigned long BLUE	= 0x000000ff;
+   const unsigned long WHITE = 0x00ffffff;
+   unsigned long color = 0;   
+   unsigned long index = 0;
+
    char title[64];
    strcpy( title, "FibFractal" );
 
@@ -361,6 +356,7 @@ int main( int argc, char** argv ) {
    CHECK_NULL_PTR( output_file );
    strcat( output_file, "/fib_fractal.png" );
 
+   unsigned long num_iterations = 1;
    char* endptr = NULL;
 
    int option_index = 0;
@@ -405,7 +401,7 @@ int main( int argc, char** argv ) {
    } // end of while loop
 
    VERBOSE_PRINTF( "num_iterations set to %lu.\n", num_iterations );  
-   VERBOSE_PRINTF( "color set to %0x.\n", color );  
+   VERBOSE_PRINTF( "color set to %0lx.\n", color );  
    VERBOSE_PRINTF( "output_file set to %s.\n", output_file );  
    
 	unsigned long* fib_len_table = ( unsigned long* )calloc( num_iterations, sizeof( unsigned long ) );
@@ -418,18 +414,17 @@ int main( int argc, char** argv ) {
 
    unsigned long fib_word_len = 1;
    unsigned long prev_fib_word_len = 1; 
-	for ( unsigned long index = 0; index < num_iterations; index++ ) {
+	for ( index = 0; index < num_iterations; index++ ) {
       fib_word_len = fib_recursive_memoized( fib_len_table, index );
       VERBOSE_PRINTF( "fib_word_len %lu is %lu\n", index, fib_word_len );
 
-		if ( index == ( num_iterations - 2 ) ) {
-			prev_fib_word_len = fib_word_len;
-		}
       fib_words[ index ] = calloc( ( fib_word_len + 1 ), sizeof( char ) );
       CHECK_NULL_PTR( fib_words[ index ] );
    }
 	
-
+	prev_fib_word_len = fib_len_table[ num_iterations - 2 ];
+	
+	printf( "Fibonacci Word length was %lu\n", fib_word_len );
    // Generate Fibonacci Word
    // ======================================
    // Let f1 be "1" and f2 be "0".
@@ -458,8 +453,8 @@ int main( int argc, char** argv ) {
       strcpy( fib_words[ 0 ], "1" );
    } 
 
-   printf( "fib_word for %lu iterations is %s\n", num_iterations,
-           fib_words[ num_iterations - 1 ] );
+   //printf( "fib_word for %lu iterations is %s\n", num_iterations,
+   //        fib_words[ num_iterations - 1 ] );
 
    prev_dir = UP;
 
@@ -469,7 +464,7 @@ int main( int argc, char** argv ) {
    CHECK_NULL_PTR( segment_directions );
    unsigned long segment_index = 0;
 
-   for ( unsigned long index = 0; index < fib_word_len; index++ ) {
+   for ( long index = 0; index < fib_word_len; index++ ) {
       temp_dir = FORWARD;
       // updates static prev_dir
       choose_direction( temp_dir );
@@ -491,32 +486,26 @@ int main( int argc, char** argv ) {
 
 	// For num_iterations=23, I need the image to be wider
 	// TODO: Make this resize the drawing
-   double width     = 8030.0;
-   double height    = 3515.0;
-   double area  = width * height;
-   uint32_t black   = 0;
-   uint32_t white   = 0xffffff;
-   uint32_t* pixels = malloc( area * sizeof( uint32_t ) );
+   unsigned long width     = 16530;
+   unsigned long height    = 16530;
+   unsigned long num_pixels  = width * height;
+   unsigned long* pixels = malloc( num_pixels * sizeof( unsigned long ) );
    CHECK_NULL_PTR( pixels );
-   for ( unsigned long index = 0; index < ( unsigned long )area; index++ ) {
-      pixels[ index ] = white;
+   for ( index = 0; index < num_pixels; index++ ) {
+      pixels[ index ] = WHITE;
    }
 
-   unsigned long start_index = ( ( unsigned long )width * ( ( unsigned long )height - 15 ) ) + 15;
+   unsigned long start_index = ( width * ( height - 15 ) ) + 15;
    unsigned long end_index;
    unsigned long length   = 5;
 
 	int prev_dir = 0;
 	
-	
-	for ( unsigned long index = 0; index < fib_word_len; index++ ) {
+	for ( index = 0; index < fib_word_len; index++ ) {
 		direction_e temp_dir = segment_directions[ index ];
 
-		if ( index < prev_fib_word_len ) {
-			color = black;
-		} else {
-			color = 0xff0000;
-		}
+		color = ( index & 0x00ffffff ) | 0x3;
+
 		if ( temp_dir == UP ) {
          draw_segment_up( pixels, width, height, start_index,
                             &end_index, length, color );
@@ -537,7 +526,7 @@ int main( int argc, char** argv ) {
    write_image( output_file, width, height, pixels, title );
    printf( "DONE.\n\n" );
 
-   for ( unsigned long index = 0; index < num_iterations; index++ ) {
+   for ( index = 0; index < num_iterations; index++ ) {
       free( fib_words[ index ] );
    }
    free( fib_len_table );
