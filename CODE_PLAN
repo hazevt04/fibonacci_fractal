@@ -1,0 +1,44 @@
+
+
+1) Get Command Line Args (FibInputs Class)
+   Use get_opt_long to parse command line
+   Need to get/set
+      verbose flag (bool)
+      num_iterations (unsigned long)
+      color (unsigned int)
+      output file name (string)
+
+2) Generate Fibonacci Word (FibWord Class)
+      For num_iterations, append bits to string based on
+      Fib fractal rules
+
+3) Build Directions List (Directions Class)
+      For number of bits in string, build list of directions.
+
+4) Build Fibonacci Fractal (FibFractal Class)
+      For each listed direction, set pixel data for segements
+
+5) Output Fibonacci Fractal (FibFractal Class)
+      Output pixel data to output file name
+
+
+class FibFracInputs
+   parseArgs( argv, argc )
+   bool verbose
+   unsigned long num_iterations
+   unsigned int color
+   string output_file
+
+class FibWord
+   genFibWord( num_iterations )
+   string fib_word
+
+class Directions
+   genDirections( fib_word )
+   list<Direction> dir_list
+
+class FibFractal
+   setFibFractal( dir_list )
+   outputtoFile( file_name )
+   
+
