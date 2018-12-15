@@ -34,7 +34,8 @@ class InputParser {
 
          //int error_flag = 0;
          //int help_flag = 0;
-         int ch = getopt_long( argc, argv, "hvn:c:o:", long_options, &option_index );
+         int ch = getopt_long( argc, argv, "hvn:c:o:", long_options, 
+               &option_index );
          while( ch != -1 ) {
             switch( ch ) {
                case 0:
@@ -101,7 +102,7 @@ class InputParser {
 
       void displayArgs() {
          std::cout << "Verbose Flag is " << (verbose_flag ? "true" : "false") << std::endl;
-         std::cout << "Color is " << std::setbase(16) << color << std::resetiosflags() << std::endl;
+         std::cout << "Color is " << std::hex << color << std::dec << std::endl;
          std::cout << "Number of iterations is " << num_iterations << std::endl;
          std::cout << "Output File name is " << output_file << std::endl;
       }

@@ -4,7 +4,13 @@ project( fibonacci_fractal )
 
 include_directories( $CMAKE_SOURCE_DIR )
 
-add_executable( fibonacci_fractal fibonacci_fractal.c )
+add_definitions(-std=c++11 )
 
-target_link_libraries( fibonacci_fractal gsl gslcblas png z m )
+set(SRCS
+   "InputParser.cpp"
+)
+
+add_executable( fibonacci_fractal "${SRCS}" )
+
+#target_link_libraries( fibonacci_fractal gsl gslcblas png z m )
 
