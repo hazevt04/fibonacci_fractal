@@ -21,6 +21,11 @@
 5) Output Fibonacci Fractal (FibFractal Class)
       Output pixel data to output file name
 
+Base Classes-->ExtendedClasses:
+MyInputParser--> FibInputParser
+MyInput-->FibInput
+MyFractal-->FibFractal
+MyUtils
 
 class FibFracInputs
    parseArgs( argv, argc )
