@@ -8,6 +8,7 @@ add_definitions(-std=c++11 )
 
 set(SRCS
    "InputParser.cpp"
+   "main.cpp"
 )
 
 add_executable( fibonacci_fractal "${SRCS}" )
