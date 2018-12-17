@@ -6,7 +6,9 @@
 #include <string>
 
 #include "utils.h"
-#include "InputParser.h"
+#include "BaseInput.h"
+#include "FibFractInput.h"
+#include "FibFractInputParser.h"
 
 static int verbose_flag;
 
@@ -19,20 +21,23 @@ static struct option long_options[] = {
    { NULL, 0, NULL, 0 }
 };
 
-InputParser::InputParser( int argc, char* argv[] ) {
+void FibFractInputParser::parseInput( int argc, char* argv[] ) {
 
    char* pwd = std::getenv( "PWD" );
    
-   this->output_file = "/fib_fractal";
-   this->output_file.insert( 0, pwd );
+   std::string output_file;
+   unsigned int color = 0;
+   unsigned long num_iterations = 1;
+   bool verbose = false;
+
+   output_file = "/fib_fractal";
+   output_file.insert( 0, pwd );
 
    char* endptr = NULL;
 
    int option_index = 0;
    verbose_flag = 0;
 
-   //int error_flag = 0;
-   //int help_flag = 0;
    int ch = getopt_long( argc, argv, "hvn:c:o:", long_options, 
          &option_index );
    while( ch != -1 ) {
@@ -49,17 +54,17 @@ InputParser::InputParser( int argc, char* argv[] ) {
             exit( EXIT_SUCCESS );
             break;
          case 'v':
-            this->verbose_flag = 1;
+            verbose_flag = 1;
             break;
          case 'n':
-            this->num_iterations = std::stoul( optarg, 0, 10 );
+            num_iterations = std::stoul( optarg, 0, 10 );
             break;
          case 'c':
-            this->color = std::stoul( optarg, 0, 16 );
-            this->color &= 0xffffff;
+            color = std::stoul( optarg, 0, 16 );
+            color &= 0xffffff;
             break;
          case 'o': 
-            this->output_file = optarg;
+            output_file = optarg;
             break;
          default:
             usage( argv[0] ); 
@@ -70,11 +75,13 @@ InputParser::InputParser( int argc, char* argv[] ) {
       ch = getopt_long( argc, argv, "hvn:c:o:", long_options, &option_index );
    } // end of while loop
 
-} // end of InputParser() constructor
+   this->input = new FibFractInput( color, num_iterations, output_file, verbose );
+
+} // end of FibFractInputParser() constructor
 
 
-void InputParser::usage( char* argv ) {
-   std::cout << "Usage " << argv << " <options>" << std::endl;
+void FibFractInputParser::usage( char* name ) {
+   std::cout << "Usage " << name << " <options>" << std::endl;
    std::cout << "Options one of: " << std::endl;
    std::cout << std::setw(20) << "--verbose"
              << std::setw(4) << "-v" 
@@ -99,12 +106,4 @@ void InputParser::usage( char* argv ) {
 }
 
 
-void InputParser::displayArgs() {
-   //doPrint(verbose_flag, std::cout, "Verbose Flag is ", ( verbose_flag ? "true" : "false"), 
-   //      "\n");
-   std::cout << "Verbose Flag is " << (verbose_flag ? "true" : "false") << std::endl;
-   std::cout << "Color is " << std::hex << color << std::dec << std::endl;
-   std::cout << "Number of iterations is " << num_iterations << std::endl;
-   std::cout << "Output File name is " << output_file << std::endl;
-}
 

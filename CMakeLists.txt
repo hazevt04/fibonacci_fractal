@@ -7,7 +7,7 @@ include_directories( $CMAKE_SOURCE_DIR )
 add_definitions(-std=c++11 )
 
 set(SRCS
-   "InputParser.cpp"
+   "FibFractInputParser.cpp"
    "main.cpp"
 )
 
