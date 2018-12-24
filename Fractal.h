@@ -3,9 +3,9 @@
 
 class Fractal {
    public:
-      Fractal( unsigned long num_iterations ) : 
+      Fractal( unsigned long num_iterations = 1 ) : 
          num_iterations( num_iterations ) { }
-      ~Fractal() {}
+      ~Fractal() { }
    protected:
       unsigned long num_iterations;
 };
