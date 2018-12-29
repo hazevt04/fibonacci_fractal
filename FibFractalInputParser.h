@@ -5,17 +5,17 @@
 
 #include "BaseInput.h"
 #include "BaseInputParser.h"
-#include "FibFractInput.h"
+#include "FibFractalInput.h"
 
-class FibFractInputParser: public BaseInputParser {
+class FibFractalInputParser: public BaseInputParser {
    public:
-      FibFractInputParser() { }
-      ~FibFractInputParser() { }
+      FibFractalInputParser() { }
+      ~FibFractalInputParser() { }
       void parseInput( int argc, char* argv[] );
-      FibFractInput* getInput() { return input; }
+      FibFractalInput* getInput() { return input; }
       void usage( char* name );
    private:
-      FibFractInput* input;
+      FibFractalInput* input;
 };
 
 #endif

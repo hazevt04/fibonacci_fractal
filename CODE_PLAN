@@ -1,6 +1,6 @@
 
 
-1) Get Command Line Args (FibInputs Class)
+1) Get Command Line Args (FibFractalInputParser object produces FibFractalInput object)
    Use get_opt_long to parse command line
    Need to get/set
       verbose flag (bool)
@@ -8,42 +8,44 @@
       color (unsigned int)
       output file name (string)
 
-2) Generate Fibonacci Word (FibWord Class)
-      For num_iterations, append bits to string based on
-      Fib fractal rules
+2) Generate Fibonacci Fractal (FibFractalBuilder object consumes FibFractalInput object and produces FibFractalWord object)
+      For num_iterations, 
+         Append bits to string based on Fib fractal rules. 
+         Based on string, append new Segment objects to list within FibFractal
 
-3) Build Directions List (Directions Class)
-      For number of bits in string, build list of directions.
+3) Convert Segments list to ImageData object
+      For each Segment, set ImageData object's data
 
-4) Build Fibonacci Fractal (FibFractal Class)
-      For each listed direction, set pixel data for segements
-
-5) Output Fibonacci Fractal (FibFractal Class)
+5) Render ImageData (PNGRenderer Class which also took in FibFractalInput object)
       Output pixel data to output file name
 
 Base Classes-->ExtendedClasses:
-MyInputParser--> FibInputParser
-MyInput-->FibInput
-MyFractal-->FibFractal
+---------------------------------
+BaseInput-->FibFractalInput
+BaseInputParser--> FibFractalInputParser
+BaseFractal-->FibFractal
+BaseRenderer-->PNGRenderer
 MyUtils
 
-class FibFracInputs
+class FibFractalInputs
    parseArgs( argv, argc )
    bool verbose
    unsigned long num_iterations
    unsigned int color
    string output_file
 
-class FibWord
+class FibFractalWord
    genFibWord( num_iterations )
    string fib_word
 
-class Directions
-   genDirections( fib_word )
-   list<Direction> dir_list
+class FibFractalSegments
+   genSegments( FractalWord* fword )
+   list<Segment> segment_list
 
 class FibFractal
-   setFibFractal( dir_list )
-   outputtoFile( file_name )
+   setFibFractalWord( FibFractalWord* fibword )
+   setFibFractalSegments( FibFractalSegments* fibsegments )
+   FibFractalWord* fibword
+   FibFractalSegments* fibsegments
    
-
+class FibFractalBuilder

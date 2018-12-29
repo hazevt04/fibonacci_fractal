@@ -8,7 +8,10 @@ class BaseInputParser {
       BaseInputParser() { }
       ~BaseInputParser() { }
       virtual void parseInput( int argc, char* argv[] ) = 0;
+      BaseInput* getInput() { return input; }
       virtual void usage( char* name ) = 0;
+   protected:
+      BaseInput* input;
 };
 
 #endif

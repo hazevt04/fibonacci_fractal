@@ -8,11 +8,11 @@
 
 class FibFractalBuilder : public FractalBuilder {
    public:
-      FibFractalBuilder( Fractal* input );
+      FibFractalBuilder( FractalInput* input );
       void BuildFractal( );
       void BuildSegments( );
 
-      Fractal* GetFractal();
+      Fractal* GetFractal() { return fractal; };
    private:
       Segment::Direction_e DetermineNextDirection( );
       Segment::Direction_e prevDirection;

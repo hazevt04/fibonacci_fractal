@@ -7,11 +7,13 @@ include_directories( $CMAKE_SOURCE_DIR )
 add_definitions(-std=c++11 )
 
 set(SRCS
-   "FibFractInputParser.cpp"
+   "ImageData.cpp"
+   "PNGRenderer.cpp"
    "main.cpp"
 )
 
+
 add_executable( fibonacci_fractal "${SRCS}" )
 
-#target_link_libraries( fibonacci_fractal gsl gslcblas png z m )
+target_link_libraries( fibonacci_fractal png z )
 

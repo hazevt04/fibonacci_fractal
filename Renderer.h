@@ -3,11 +3,16 @@
 
 #include <iostream>
 
+#include "ImageData.h"
+
 class Renderer {
    public:
       Renderer() { }
+      Renderer( ImageData* data ) { }
       ~Renderer() { }
-      render();
+      virtual void doRender() = 0;
+   protected:
+      ImageData* data;
 };
 
 #endif

@@ -7,8 +7,8 @@
 
 #include "utils.h"
 #include "BaseInput.h"
-#include "FibFractInput.h"
-#include "FibFractInputParser.h"
+#include "FibFractalInput.h"
+#include "FibFractalInputParser.h"
 
 static int verbose_flag;
 
@@ -21,7 +21,7 @@ static struct option long_options[] = {
    { NULL, 0, NULL, 0 }
 };
 
-void FibFractInputParser::parseInput( int argc, char* argv[] ) {
+void FibFractalInputParser::parseInput( int argc, char* argv[] ) {
 
    char* pwd = std::getenv( "PWD" );
    
@@ -30,7 +30,7 @@ void FibFractInputParser::parseInput( int argc, char* argv[] ) {
    unsigned long num_iterations = 1;
    bool verbose = false;
 
-   output_file = "/fib_fractal";
+   output_file = "/fib_fractal.png";
    output_file.insert( 0, pwd );
 
    char* endptr = NULL;
@@ -75,12 +75,12 @@ void FibFractInputParser::parseInput( int argc, char* argv[] ) {
       ch = getopt_long( argc, argv, "hvn:c:o:", long_options, &option_index );
    } // end of while loop
 
-   this->input = new FibFractInput( color, num_iterations, output_file, verbose );
+   this->input = new FibFractalInput( color, num_iterations, output_file, verbose_flag );
 
-} // end of FibFractInputParser() constructor
+} // end of FibFractalInputParser() constructor
 
 
-void FibFractInputParser::usage( char* name ) {
+void FibFractalInputParser::usage( char* name ) {
    std::cout << "Usage " << name << " <options>" << std::endl;
    std::cout << "Options one of: " << std::endl;
    std::cout << std::setw(20) << "--verbose"
