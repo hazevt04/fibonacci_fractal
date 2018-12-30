@@ -8,8 +8,10 @@
 #include <string.h>
 
 // Generates a Fibonacci Word Fractal when given
-// a number of iterations. Output is to a PNG file.
+// a number of iterations. Output is to a PNG file or SVG file
 
+#define GREATER_THAN( A, B ) ( ( A ) > ( B ) ? ( A ) : ( B ) )
+#define LESS_THAN( A, B ) ( ( A ) < ( B ) ? ( A ) : ( B ) )
 
 #define VERBOSE_PRINTF( fmt, ... )        \
    {                                      \
@@ -30,6 +32,53 @@
       }                                                       \
    }
 
+typedef struct {
+   ulong y;
+   ulong x;
+} point_t;
+
+int write_svg(char* filename, point_t min_point, point_t max_point, int num_points, point_t* points, char* title) {
+   
+   int code = 0;
+   ulong height = max_point.y;
+   ulong width = max_point.x;
+   FILE *fp = NULL;
+   // Open file for writing
+   fp = fopen(filename, "w");
+
+   if ( !fp ) {
+      fprintf(stderr, "Could not open file %s for writing\n", filename);
+      code = 1;
+      if (fp != NULL) fclose(fp);
+      return code;
+   }
+   
+   // Write the data
+   fprintf( fp, "<!DOCTYPE html>" );
+   fprintf( fp, "<html>" );
+   fprintf( fp, "<body>" );
+
+   fprintf( fp, "<svg height=\"%ld\" width=\"%ld\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink= \"http:www.w3.org/1999/xlink\">", height, width );
+   //<polyline points="20,20 40,25 60,40 80,120 120,140 200,180" style="fill:none;stroke:black;stroke-width:3" />
+   fprintf( fp, "<polyline points=\"" );
+   for( int index = 0; index < num_points; index++ ) {
+      fprintf( fp, "%ld,%ld", points[ index ].x, points[ index ].y );
+      if ( index == num_points - 1 ) {
+         fprintf( fp, "\"" );
+      } else {
+         fprintf( fp, " " );
+      }
+   }
+   fprintf( fp, " style=\"fill:none;stroke:black;stroke-width:1\" />" );
+   fprintf( fp, "Sorry, your browser does not support inline SVG." );
+   fprintf( fp, "</svg>" );
+
+   fprintf( fp, "</body>" );
+   fprintf( fp, "</html>" );
+   
+   if (fp != NULL) fclose(fp);
+   return code;
+}
 
 ulong image_dims[11][2] = {
    {30,30},
@@ -176,7 +225,7 @@ void set_rgb( png_byte* ptr, ulong val ) {
 
 // This function actually writes out the PNG image file. The string 'title' is
 // also written into the image file
-int write_image( char* filename, int width, int height, ulong* buffer,
+int write_png( char* filename, int width, int height, ulong* buffer,
                  char* title ) {
    int code            = 0;
    FILE* fp            = NULL;
@@ -259,7 +308,7 @@ finalise:
       free( row );
 
    return code;
-} // end of write_image()
+} // end of write_png()
 
 
 void draw_segment_right( ulong* pixels, ulong width, ulong height,
@@ -654,7 +703,7 @@ int main( int argc, char** argv ) {
 
 
    printf( "Saving PNG to %s...\n", output_file );
-   write_image( output_file, width, height, pixels, title );
+   write_png( output_file, width, height, pixels, title );
    printf( "DONE.\n\n" );
 
    for ( index = 0; index < num_iterations; index++ ) {
