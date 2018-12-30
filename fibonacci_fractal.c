@@ -679,6 +679,19 @@ int main( int argc, char** argv ) {
 	int prev_dir = 0;
 	
    color = WHITE;
+   int points_index = 0;
+   
+   // Actually just a container for the max x and max y
+   point_t max_point;
+   // Actually just a container for the min x and min y
+   point_t min_point;
+
+   max_point.y = 0;
+   max_point.x = 0;
+   min_point.y = INT_MAX;
+   min_point.x = INT_MAX;
+   point_t* points = malloc( fib_word_len * 2 * sizeof(point_t) );
+   CHECK_NULL_PTR( points );
 
 	for ( index = 0; index < fib_word_len; index++ ) {
 		direction_e temp_dir = segment_directions[ index ];
@@ -696,10 +709,37 @@ int main( int argc, char** argv ) {
          draw_segment_right( pixels, width, height, start_index,
                              &end_index, length, color );
       }
+      points[ points_index ].y = start_index/width;
+      max_point.y = GREATER_THAN( max_point.y, points[ points_index ].y );
+      min_point.y = LESS_THAN( min_point.y, points[ points_index ].y );
+      
+      points[ points_index ].x = start_index % width;
+      max_point.x = GREATER_THAN( max_point.x, points[ points_index ].x );
+      min_point.x = LESS_THAN( min_point.x, points[ points_index ].x );
+
+      points_index++;
+
+      points[ points_index ].y = end_index/width;
+      max_point.y = GREATER_THAN( max_point.y, points[ points_index ].y );
+      min_point.y = LESS_THAN( min_point.y, points[ points_index ].y );
+      
+      points[ points_index ].x = end_index % width;
+      max_point.x = GREATER_THAN( max_point.x, points[ points_index ].x );
+      min_point.x = LESS_THAN( min_point.x, points[ points_index ].x );
+      points_index++;
+
       start_index = end_index;
      
       color = color_select( index, fib_word_len ); 
    }
+   char output_svg_file[64];
+   strcpy( output_svg_file, "fixed_fib_fractal.svg" );
+   char svg_title[64];
+   strcpy( svg_title, "Fibonacci Fractal" );
+   
+   printf( "Saving points to %s...\n", output_svg_file );
+   write_svg( output_svg_file, min_point, max_point, points_index, 
+         points, svg_title );
 
 
    printf( "Saving PNG to %s...\n", output_file );
@@ -713,5 +753,6 @@ int main( int argc, char** argv ) {
    free( fib_words );
    free( segment_directions );
    free( pixels );
+   free( points );
    exit( EXIT_SUCCESS );
 }
