@@ -118,10 +118,10 @@ image_dim_t image_dim_lookup( ulong num_iterations ) {
       case 17 ... 19:
          dim_idx = 4;
          break;
-      case 20 ... 22:
+      case 20 ... 21:
          dim_idx = 5;
          break;
-      case 23:
+      case 22 ... 23:
          dim_idx = 6;
          break;
       case 24:
@@ -688,8 +688,8 @@ int main( int argc, char** argv ) {
 
    max_point.y = 0;
    max_point.x = 0;
-   min_point.y = INT_MAX;
-   min_point.x = INT_MAX;
+   min_point.y = LONG_MAX;
+   min_point.x = LONG_MAX;
    point_t* points = malloc( fib_word_len * 2 * sizeof(point_t) );
    CHECK_NULL_PTR( points );
 
