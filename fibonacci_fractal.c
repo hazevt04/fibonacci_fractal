@@ -30,6 +30,101 @@
       }                                                       \
    }
 
+
+ulong image_dims[11][2] = {
+   {30,30},
+   {45,30},
+   {45,45},
+   {165,165},
+   {540,400},
+   {950,1250},
+   {2950,2100},
+   {5000,2100},
+   {5000,6000},
+   {5200,7200},
+   {30050,20050}
+};
+
+typedef struct {
+   ulong width;
+   ulong height;
+} image_dim_t;
+
+image_dim_t image_dim_lookup( ulong num_iterations ) {
+   image_dim_t image_dim;
+   int dim_idx = 0;
+   switch( num_iterations ) {
+      case 1 ... 4:
+         dim_idx = 0;
+         break;
+      case 5 ... 6:
+         dim_idx = 1;
+         break;
+      case 7 ... 12:
+         dim_idx = 2;
+         break;
+      case 13 ... 16:
+         dim_idx = 3;
+         break;
+      case 17 ... 19:
+         dim_idx = 4;
+         break;
+      case 20 ... 22:
+         dim_idx = 5;
+         break;
+      case 23:
+         dim_idx = 6;
+         break;
+      case 24:
+         dim_idx = 7;
+         break;
+      case 25:
+         dim_idx = 8;
+         break;
+      case 26:
+         dim_idx = 9;
+         break;
+      default:
+         dim_idx = 10;
+         break;
+
+   } // end of switch
+   image_dim.width = image_dims[dim_idx][0];
+   image_dim.height = image_dims[dim_idx][1];
+
+   return image_dim;
+}
+
+ulong color_select( ulong index, ulong max_val ) {
+
+   ulong quarter = max_val + 4 / 4;
+   ulong half = max_val + 1 / 2;
+   ulong three_quarters = 3 * quarter;
+
+   ulong adjusted_index;
+   if ( adjusted_index < quarter ) {
+      adjusted_index = (( max_val - index ) & 0x3f ) * 0x010203;
+   } else if ( ( adjusted_index >= quarter ) && ( adjusted_index < half ) ) {
+      adjusted_index = (( max_val - index ) & 0x7f ) * 0x040506;
+   } else if ( ( adjusted_index >= half ) && ( adjusted_index < three_quarters ) ) {
+      adjusted_index = (( max_val - index ) & 0xbf ) * 0x070809;
+   } else {
+      adjusted_index = (( max_val - index ) & 0xff ) * 0x0a0b0c;
+   }
+   return adjusted_index; 
+
+   /*
+   const ulong BLACK = 0x00000000;
+   const ulong RED	= 0x00ff0000;
+   const ulong GREEN	= 0x0000ff00;
+   const ulong BLUE	= 0x000000ff;
+   const ulong WHITE = 0x00ffffff;
+   
+   const ulong PURPLE= RED | BLUE;
+   const ulong YELLOW= RED | GREEN;
+   */
+}
+
 typedef enum direction { UP, DOWN, LEFT, RIGHT, FORWARD } direction_e;
 
 void print_dir( direction_e dir ) {
@@ -316,6 +411,10 @@ static struct option long_options[] = {
    { "num_iterations", required_argument, NULL, 'n' },
    { "color", optional_argument, NULL, 'c' },
    { "output_file", optional_argument, NULL, 'o' },
+#ifdef TESTING
+   { "width", optional_argument, NULL, 'x' },
+   { "height", optional_argument, NULL, 'y' },
+#endif
    { NULL, 0, NULL, 0 }
 };   
 
@@ -337,12 +436,21 @@ void usage( char* argv ) {
    printf( "%20s%4s%56s", 
       "--output_file", "-n", 
       "path to the output PNG file for the fractal\n" );  
+#ifdef TESTING
+   printf( "%20s%4s%56s", 
+      "--width", "-x", 
+      "width in pixels of the fractal image\n" );  
+   printf( "%20s%4s%56s", 
+      "--height", "-y", 
+      "height in pixels of the fractal image\n" );  
+#endif
 }
 
 
 int main( int argc, char** argv ) {
    const ulong BLACK = 0x00000000;
    const ulong RED	= 0x00ff0000;
+   const ulong GREEN	= 0x0000ff00;
    const ulong BLUE	= 0x000000ff;
    const ulong WHITE = 0x00ffffff;
    ulong color = 0;   
@@ -361,9 +469,14 @@ int main( int argc, char** argv ) {
    int option_index = 0;
    verbose_flag = 0;
 
-   //int error_flag = 0;
-   //int help_flag = 0;
+   ulong width = 16350;
+   ulong height = 16350;
+#ifdef TESTING
+   printf( "TESTING set\n" );
+   int ch = getopt_long( argc, argv, "hvn:c:o:x:y:", long_options, &option_index );
+#else
    int ch = getopt_long( argc, argv, "hvn:c:o:", long_options, &option_index );
+#endif
    while( ch != -1 ) {
       switch( ch ) {
          case 0:
@@ -390,18 +503,37 @@ int main( int argc, char** argv ) {
          case 'o': 
             strcpy( output_file, optarg );
             break;
+#ifdef TESTING
+         case 'x':
+            width = strtoul( optarg, &endptr, 10 );
+            break;
+         case 'y':
+            height = strtoul( optarg, &endptr, 10 );
+            break;
+#endif
          default:
             usage( argv[0] ); 
             exit( EXIT_FAILURE );
             break;
       } // end of switch
-      
+#ifdef TESTING
+      ch = getopt_long( argc, argv, "hvn:c:o:x:y:", long_options, &option_index );
+#else
       ch = getopt_long( argc, argv, "hvn:c:o:", long_options, &option_index );
+#endif
    } // end of while loop
+   
+   image_dim_t image_dim = image_dim_lookup( num_iterations );
+   width = image_dim.width;
+   height = image_dim.height;
 
    VERBOSE_PRINTF( "num_iterations set to %lu.\n", num_iterations );  
    VERBOSE_PRINTF( "color set to %0lx.\n", color );  
    VERBOSE_PRINTF( "output_file set to %s.\n", output_file );  
+#ifdef TESTING
+   printf( "width set to %lu.\n", width );  
+   printf( "height set to %lu.\n", height );  
+#endif
    
 	ulong* fib_len_table = ( ulong* )calloc( num_iterations, sizeof( ulong ) );
    CHECK_NULL_PTR( fib_len_table );
@@ -483,15 +615,12 @@ int main( int argc, char** argv ) {
       }
    } // end of for loop
 
-	// For num_iterations=23, I need the image to be wider
-	// TODO: Make this resize the drawing
-   ulong width     = 16530;
-   ulong height    = 16530;
+   
    ulong num_pixels  = width * height;
    ulong* pixels = malloc( num_pixels * sizeof( ulong ) );
    CHECK_NULL_PTR( pixels );
    for ( index = 0; index < num_pixels; index++ ) {
-      pixels[ index ] = WHITE;
+      pixels[ index ] = BLACK;
    }
 
    ulong start_index = ( width * ( height - 15 ) ) + 15;
@@ -500,10 +629,10 @@ int main( int argc, char** argv ) {
 
 	int prev_dir = 0;
 	
+   color = WHITE;
+
 	for ( index = 0; index < fib_word_len; index++ ) {
 		direction_e temp_dir = segment_directions[ index ];
-
-		color = ( index & 0x00ffffff ) | 0x3;
 
 		if ( temp_dir == UP ) {
          draw_segment_up( pixels, width, height, start_index,
@@ -519,7 +648,10 @@ int main( int argc, char** argv ) {
                              &end_index, length, color );
       }
       start_index = end_index;
+     
+      color = color_select( index, fib_word_len ); 
    }
+
 
    printf( "Saving PNG to %s...\n", output_file );
    write_image( output_file, width, height, pixels, title );
