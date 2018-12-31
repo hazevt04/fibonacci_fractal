@@ -6,8 +6,8 @@
 
 class FractalBuilder {
    public:
-      virtual void BuildFractal( );
-      virtual void BuildSegments( );
+      virtual void BuildFractal( ) = 0;
+      virtual void BuildSegments( ) = 0;
       virtual Fractal* GetFractal() { return 0; }
    protected:
       FractalBuilder( FractalInput* input );
