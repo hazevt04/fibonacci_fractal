@@ -6,33 +6,33 @@
 
 #include "BaseInput.h"
 
+typedef unsigned long ulong;
+
 class FibFractalInput: public BaseInput {
    public:
       FibFractalInput();
-      ~FibFractalInput() { }
+      ~FibFractalInput() { delete [] fib_memo_table; }
 
-      FibFractalInput( unsigned int color, 
-            unsigned long num_iterations, 
+      FibFractalInput( ulong color, 
+            ulong num_iterations, 
             std::string output_file,
-            bool verbose ) {
-      
-         this->color = color;
-         this->num_iterations = num_iterations;
-         this->output_file = output_file;
-         this->verbose = verbose;
-      }
+            bool verbose );
 
-      void display() {
-         std::cout << "Verbose Flag is " << (verbose ? "true" : "false") << std::endl;
-         std::cout << "Color is 0x" << std::hex << color << std::dec << std::endl;
-         std::cout << "Number of iterations is " << num_iterations << std::endl;
-         std::cout << "Output File name is " << output_file << std::endl;
-      }
+      void display();
+   
+      ulong Getcolor( ) { return color; }
+      ulong Getnum_iterations( ) { return num_iterations; }
+      std::string Getoutput_file( ) { return output_file; }
+      ulong Getfib_word_length( ) { return fib_word_length; }
 
    private:
-      unsigned int color;
-      unsigned long num_iterations;
+      ulong* fib_memo_table;
+      ulong calcFibMemoized( ulong* table, ulong num );
+      
+      ulong color;
+      ulong num_iterations;
       std::string output_file;
+      ulong fib_word_length;
 };
 
 #endif

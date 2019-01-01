@@ -7,6 +7,9 @@ include_directories( $CMAKE_SOURCE_DIR )
 add_definitions(-std=c++11 )
 
 set(SRCS
+   "FibFractalInput.cpp"
+   "FibFractalInputParser.cpp"
+   "FibFractalBuilder.cpp"
    "ImageData.cpp"
    "PNGRenderer.cpp"
    "main.cpp"

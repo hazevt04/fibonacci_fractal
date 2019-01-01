@@ -1,22 +1,23 @@
 #ifndef _FIBFRACTALBUILDER_H_
 #define _FIBFRACTALBUILDER_H_
 
-#include "Segment.h"
+#include "FibFractalInput.h"
 #include "Fractal.h"
-
 #include "FractalBuilder.h"
 
-class FibFractalBuilder : public FractalBuilder {
+class FibFractalBuilder: public FractalBuilder {
    public:
-      FibFractalBuilder( FractalInput* input );
+      FibFractalBuilder( ) { }
+      FibFractalBuilder( BaseInput* input );
       void BuildFractal( );
-      void BuildSegments( );
 
-      Fractal* GetFractal() { return fractal; };
+      virtual Fractal* GetFractal( ) { return fractal; };
    private:
-      Segment::Direction_e DetermineNextDirection( );
-      Segment::Direction_e prevDirection;
-      Fractal* fractal;
+      void DetermineNextDirection( std::string direction );
+      std::string current_direction;
+
+      Fractal* fractal; 
+      FibFractalInput* input;
 };
 
 #endif

@@ -14,10 +14,12 @@ int main( int argc, char** argv ) {
    FibFractalInput* input = parser->getInput();
    input->display();
 
+   FractalBuilder* builder = new FibFractalBuilder( input );
+   builder->BuildFractal( );
 
-   
-   delete parser;
+   delete builder; 
    delete input;
+   delete parser;
    return 0;
 
 }

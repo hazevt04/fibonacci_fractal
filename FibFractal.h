@@ -1,23 +1,32 @@
 #ifndef _FIBFRACTAL_H
 #define _FIBFRACTAL_H_
 
-#include <list>
+#include <string>
 
 #include "Fractal.h"
-#include "Segment.h"
+#include "FibFractalInput.h"
 
-class FibFractal {
+class FibFractal: public Fractal {
    public:
-      FibFractal( unsigned long num_iterations = 1 ) :
-         num_iterations( num_iterations ) { }
-      ~FibFractal() { }
-      Segment* getSegment( unsigned long num_segment ) {
-         return &(segments[num_segment]);
+      FibFractal( ) { } 
+      FibFractal( std::string fib_word, std::string fib_directions ) { 
+         this->fib_word = fib_word;
+         this->fib_directions = fib_directions;
+      } 
+      ~FibFractal( ) { }
+
+      void Setfib_word( std::string fib_word ) { this->fib_word = fib_word; }
+      void Setfib_directions( std::string fib_directions ) { 
+         this->fib_directions = fib_directions; 
       }
-      void render() { renderer->doRender(); }
+      std::string Getfib_word( ) { return fib_word; }
+      std::string Getfib_directions( ) { return fib_directions; }
    private:
-      list<Segment>* segments;
-      Renderer* renderer;
+      // binary string
+      std::string fib_word;
+      // string with directions based on the fib_word
+      std::string fib_directions;
+
 };
 
 #endif

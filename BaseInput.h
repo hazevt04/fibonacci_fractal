@@ -5,12 +5,13 @@
 
 class BaseInput {
    public:
-      BaseInput() { }
+      BaseInput( ) { }
       BaseInput( bool verbose ) {
          this->verbose = false;
       }
 
-      ~BaseInput() { }
+      virtual ~BaseInput( ) { }
+      void display( ) { }
    protected:
       bool verbose;
 };

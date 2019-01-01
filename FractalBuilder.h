@@ -2,15 +2,15 @@
 #define _FRACTALBUILDER_H_
 
 #include "Fractal.h"
-#include "FractalInput.h"
+#include "BaseInput.h"
 
 class FractalBuilder {
    public:
-      virtual void BuildFractal( ) = 0;
-      virtual void BuildSegments( ) = 0;
+      virtual void BuildFractal( ) { };
       virtual Fractal* GetFractal() { return 0; }
    protected:
-      FractalBuilder( FractalInput* input );
+      FractalBuilder( ) { }
+      FractalBuilder( BaseInput* input );
 
 };
 
