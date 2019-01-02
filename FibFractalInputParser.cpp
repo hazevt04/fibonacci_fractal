@@ -76,7 +76,7 @@ void FibFractalInputParser::parseInput( int argc, char* argv[] ) {
    } // end of while loop
 
    this->input = new FibFractalInput( color, num_iterations, output_file, verbose_flag );
-
+   //this->input->display();
 } // end of FibFractalInputParser() constructor
 
 

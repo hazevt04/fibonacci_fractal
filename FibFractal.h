@@ -8,13 +8,12 @@
 
 class FibFractal: public Fractal {
    public:
-      FibFractal( ) { } 
-      FibFractal( std::string fib_word, std::string fib_directions ) { 
-         this->fib_word = fib_word;
-         this->fib_directions = fib_directions;
-      } 
-      ~FibFractal( ) { }
-
+      FibFractal( ) {  }
+      ~FibFractal( ) { 
+      }
+      FibFractal( FibFractalInput* input ) { 
+         this->input = input;
+      }
       void Setfib_word( std::string fib_word ) { this->fib_word = fib_word; }
       void Setfib_directions( std::string fib_directions ) { 
          this->fib_directions = fib_directions; 
@@ -26,6 +25,8 @@ class FibFractal: public Fractal {
       std::string fib_word;
       // string with directions based on the fib_word
       std::string fib_directions;
+   
+      FibFractalInput* input;
 
 };
 

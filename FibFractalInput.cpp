@@ -13,8 +13,12 @@ FibFractalInput::FibFractalInput(
    this->output_file = output_file;
    this->verbose = verbose;
 
-   this->fib_memo_table = new ulong[num_iterations];  
-   this->fib_word_length = calcFibMemoized( this->fib_memo_table, num_iterations );
+   this->fib_memo_table = new ulong[num_iterations + 1];  
+   for( int index = 0; index <= num_iterations; index++ ) {
+      this->fib_memo_table[ index ] = 0;
+   }
+   ulong junk = calcFibMemoized( this->fib_memo_table, num_iterations );
+   this->fib_word_length = fib_memo_table[ num_iterations - 1 ];
 }
 
 void FibFractalInput::display() {
