@@ -1,6 +1,7 @@
 
 #include "FibFractalInputParser.h"
 #include "FibFractalInput.h"
+#include "FibFractalBuilder.h"
 #include "ImageData.h"
 #include "PNGRenderer.h"
 typedef unsigned long ulong;
@@ -14,7 +15,7 @@ int main( int argc, char** argv ) {
    FibFractalInput* input = parser->getInput();
    input->display();
 
-   FractalBuilder* builder = new FibFractalBuilder( input );
+   FibFractalBuilder* builder = new FibFractalBuilder( input );
    builder->BuildFractal( );
 
    delete builder; 
