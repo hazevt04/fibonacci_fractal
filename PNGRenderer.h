@@ -14,11 +14,13 @@ typedef unsigned long ulong;
 class PNGRenderer : public Renderer {
    public:
       PNGRenderer() { };
+      PNGRenderer( BaseInput* input ) { 
+      };
       PNGRenderer( ImageData* data );
       ~PNGRenderer();
       void doRender(); 
       void set_rgb( png_byte* ptr, ulong val );
-      int fuckit( char* filename, int width, 
+      int write_png( char* filename, int width, 
             int height, ulong* buffer, char* title );
    private:
       FILE* fp;

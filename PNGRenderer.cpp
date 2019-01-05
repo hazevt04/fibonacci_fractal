@@ -31,7 +31,7 @@ void PNGRenderer::set_rgb( png_byte* ptr, ulong val ) {
    ptr[ 2 ] = ( val ) & 0xFFUL;
 }
 
-int PNGRenderer::fuckit( char* filename, int width, int height, ulong* buffer, char* title ) {
+int PNGRenderer::write_png( char* filename, int width, int height, ulong* buffer, char* title ) {
 
    int code            = 0;
 
@@ -117,7 +117,7 @@ void PNGRenderer::doRender() {
    char fname[100];
    strcpy( fname, filename.c_str() );
    
-   int result = fuckit( fname, width, height, idata->getPixels(), fname ); 
+   int result = write_png( fname, width, height, idata->getPixels(), fname ); 
    if ( result ) {
       fprintf( stderr, "Exiting due to error in rendering PNG file." );
       exit(EXIT_FAILURE);

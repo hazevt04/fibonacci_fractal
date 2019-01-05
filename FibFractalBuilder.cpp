@@ -143,3 +143,7 @@ void FibFractalBuilder::DetermineNextDirection( std::string direction ) {
    }
    this->current_direction = next_direction;
 }
+
+
+void FibFractalBuilder::BuildImageData( ImageData& image_data ) {
+}
