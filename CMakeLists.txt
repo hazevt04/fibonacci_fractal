@@ -11,7 +11,6 @@ set(SRCS
    "FibFractalInputParser.cpp"
    "FibFractalBuilder.cpp"
    "ImageData.cpp"
-   "PNGRenderer.cpp"
    "main.cpp"
 )
 

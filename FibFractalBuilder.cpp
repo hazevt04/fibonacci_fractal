@@ -2,8 +2,9 @@
 #include <iostream>
 #include <array>
 
-//#include "FibFractal.h"
 #include "FibFractalInput.h"
+#include "ImageData.h"
+
 #include "FibFractalBuilder.h"
 
 FibFractalBuilder::FibFractalBuilder( BaseInput* input ) {
@@ -25,6 +26,8 @@ void FibFractalBuilder::BuildFractal( ) {
 
    BuildFractalWord( );
    BuildFractalDirections( );
+   BuildFractalImageData( );
+
 }
 
 void FibFractalBuilder::BuildFractalWord( ) {
@@ -36,7 +39,7 @@ void FibFractalBuilder::BuildFractalWord( ) {
    if ( num_iterations > 2 ) {
       t_fib_words[ 0 ] = "1";
       t_fib_words[ 1 ] = "0";
-      for ( int index = 2; index < num_iterations; index++ ) {
+      for ( ulong index = 2; index < num_iterations; index++ ) {
         t_fib_words[ index ] += t_fib_words[ index - 1 ]; 
         t_fib_words[ index ] += t_fib_words[ index - 2 ]; 
       }
@@ -60,7 +63,7 @@ void FibFractalBuilder::BuildFractalDirections( ) {
    std::string segment_directions[ fib_word_length + 1 ];
    std::string temp_dir;
    ulong segment_index = 0;
-   for ( long index = 0; index < fib_word_length; index++ ) {
+   for ( ulong index = 0; index < fib_word_length; index++ ) {
       temp_dir = "FORWARD";
       // updates current_direction
       DetermineNextDirection( temp_dir );
@@ -82,6 +85,7 @@ void FibFractalBuilder::BuildFractalDirections( ) {
       std::cout << index << ": " << segment_directions[ index ] << std::endl;
    }
 
+   this->fractal->Setfib_directions( segment_directions );
 }
 
 void FibFractalBuilder::DetermineNextDirection( std::string direction ) {
@@ -144,6 +148,110 @@ void FibFractalBuilder::DetermineNextDirection( std::string direction ) {
    this->current_direction = next_direction;
 }
 
+void FibFractalBuilder::draw_segment_right( ulong* pixels, ulong width, 
+      ulong height, ulong start_index, ulong* end_index, ulong length,
+      ulong color ) {
 
-void FibFractalBuilder::BuildImageData( ImageData& image_data ) {
+   ulong index             = 0;
+   ulong max_overall_index = width * height;
+   ulong last_index        = ( start_index + length );
+   for ( index = start_index; index < last_index; index++ ) {
+      if ( ( index >= 0 ) && ( index < max_overall_index ) ) {
+         pixels[ index ] = color;
+      }
+   }
+   *end_index = last_index;
+}
+
+void FibFractalBuilder::draw_segment_left( ulong* pixels, ulong width, 
+      ulong height, ulong start_index, ulong* end_index, ulong length,
+      ulong color ) {
+
+   ulong index             = 0;
+   ulong max_overall_index = width * height;
+   ulong last_index        = start_index;
+
+   if ( start_index > length ) {
+      last_index = ( start_index - length );
+      for ( index = start_index; index >= last_index; index-- ) {
+         if ( ( index >= 0 ) && ( index < max_overall_index ) ) {
+            pixels[ index ] = color;
+         }
+      }
+   }
+   *end_index = last_index;
+}
+
+void FibFractalBuilder::draw_segment_up( ulong* pixels, ulong width, 
+      ulong height, ulong start_index, ulong* end_index, ulong length,
+      ulong color ) {
+
+   ulong index             = 0;
+   ulong max_overall_index = width * height;
+   ulong last_index        = start_index;
+   if ( start_index > ( length * width ) ) {
+      last_index        = ( start_index - ( length * width ) );
+      for ( index = start_index; index > last_index; index -= width ) {
+         if ( ( index >= 0 ) && ( index < max_overall_index ) ) {
+            pixels[ index ] = color;
+         }
+      }
+   }
+   *end_index = index;
+}
+
+void FibFractalBuilder::draw_segment_down( ulong* pixels, ulong width, 
+      ulong height, ulong start_index, ulong* end_index, ulong length,
+      ulong color ) {
+
+   ulong index             = 0;
+   ulong max_overall_index = width * height;
+   ulong last_index        = ( ulong )( start_index + ( length * width ) );
+   for ( index = start_index; index < last_index; index += width ) {
+      if ( ( index >= 0 ) && ( index < max_overall_index ) ) {
+         pixels[ index ] = color;
+      }
+   }
+   *end_index = index;
+}
+
+void FibFractalBuilder::BuildFractalImageData( ) {
+   std::cout << __func__ << ": started." << std::endl;
+
+   ImageData* image_data = this->fractal->Getimage_data( );
+   ulong* pixels = image_data->Getpixels( );
+   ulong width = image_data->Getwidth( );
+   ulong height = image_data->Getheight( );
+   const ulong fib_word_length = this->input->Getfib_word_length( );
+
+   ulong start_index = ( width * ( height - 15 ) ) + 15;
+   ulong end_index;
+   ulong length   = 5;
+
+   std::string* fib_directions = this->fractal->Getfib_directions( );
+
+   if ( fib_directions ) {
+      for ( ulong index = 0; index < fib_word_length; index++ ) {
+         std::string temp_dir = fib_directions[ index ];
+
+         ulong color = ( index & 0x00ffffff ) | 0x3;
+
+         if ( temp_dir == "UP" ) {
+            draw_segment_up( pixels, width, height, start_index,
+                               &end_index, length, color );
+         } else if ( temp_dir == "DOWN" ) {
+            draw_segment_down( pixels, width, height, start_index,
+                               &end_index, length, color );
+         } else if ( temp_dir == "LEFT" ) {
+            draw_segment_left( pixels, width, height, start_index,
+                               &end_index, length, color );
+         } else {
+            draw_segment_right( pixels, width, height, start_index,
+                                &end_index, length, color );
+         }
+         start_index = end_index;
+      }
+   }
+   std::cout << __func__ << ": done." << std::endl;
+   
 }

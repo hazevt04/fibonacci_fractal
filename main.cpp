@@ -18,7 +18,7 @@ int main( int argc, char** argv ) {
    FibFractalBuilder* builder = new FibFractalBuilder( input );
    builder->BuildFractal( );
 
-   PNGRenderer* renderer = new PNGRenderer( input );
+//   PNGRenderer* renderer = new PNGRenderer( input );
    delete builder; 
    delete input;
    delete parser;
