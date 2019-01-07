@@ -8,6 +8,7 @@ class Fractal {
       Fractal( ) { }
       Fractal( BaseInput* input ) { this->input = input; }
       ~Fractal( ) { }
+
       BaseInput* Getinput( ) { return input; }
    protected:
       BaseInput* input;

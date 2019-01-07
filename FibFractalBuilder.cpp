@@ -1,6 +1,6 @@
 
+#include <sstream>
 #include <iostream>
-#include <array>
 
 #include "FibFractalInput.h"
 #include "ImageData.h"
@@ -14,7 +14,8 @@ FibFractalBuilder::FibFractalBuilder( BaseInput* input ) {
 
    this->input = dynamic_cast<FibFractalInput* >(input);
    if ( this->input == NULL ) {
-      std::cerr << "Could not case BaseInput input pointer to FibFractalInput pointer."
+      std::cerr << "Could not case BaseInput input pointer"
+         << " to FibFractalInput pointer."
          << std::endl;
    }
    
@@ -50,7 +51,8 @@ void FibFractalBuilder::BuildFractalWord( ) {
       this->fractal->Setfib_word( "1" ); 
    }
 
-   std::cout << "Fibonacci Word is " << this->fractal->Getfib_word( ) << std::endl;
+   std::cout << "Fibonacci Word is " << this->fractal->Getfib_word( ) 
+      << std::endl;
 }
 
 
@@ -81,11 +83,15 @@ void FibFractalBuilder::BuildFractalDirections( ) {
       }
    } // end of for loop   
 
+   std::string fib_directions = "";
    for ( long index = 0; index < fib_word_length; index++ ) {
-      std::cout << index << ": " << segment_directions[ index ] << std::endl;
+      fib_directions += segment_directions[ index ];
+      fib_directions += " ";
    }
+   std::cout << __func__ << ": fib_directions = " 
+      << fib_directions << std::endl;
 
-   this->fractal->Setfib_directions( segment_directions );
+   this->fractal->Setfib_directions( fib_directions );
 }
 
 void FibFractalBuilder::DetermineNextDirection( std::string direction ) {
@@ -228,30 +234,44 @@ void FibFractalBuilder::BuildFractalImageData( ) {
    ulong end_index;
    ulong length   = 5;
 
-   std::string* fib_directions = this->fractal->Getfib_directions( );
+   std::string fib_directions = this->fractal->Getfib_directions( );
+   std::istringstream isstream( fib_directions );
+   std::string temp_direction;
 
-   if ( fib_directions ) {
-      for ( ulong index = 0; index < fib_word_length; index++ ) {
-         std::string temp_dir = fib_directions[ index ];
+   for ( ulong index = 0; index < fib_word_length; index++ ) {
+
+      if ( std::getline( isstream, temp_direction, ' ' ) ) {
+         std::cout << __func__ << ": "
+            << index << ": " << temp_direction << std::endl;
 
          ulong color = ( index & 0x00ffffff ) | 0x3;
 
-         if ( temp_dir == "UP" ) {
+         if ( temp_direction == "UP" ) {
             draw_segment_up( pixels, width, height, start_index,
                                &end_index, length, color );
-         } else if ( temp_dir == "DOWN" ) {
+         } else if ( temp_direction == "DOWN" ) {
             draw_segment_down( pixels, width, height, start_index,
                                &end_index, length, color );
-         } else if ( temp_dir == "LEFT" ) {
+         } else if ( temp_direction == "LEFT" ) {
             draw_segment_left( pixels, width, height, start_index,
                                &end_index, length, color );
-         } else {
+         } else if ( temp_direction == "RIGHT" ) {
             draw_segment_right( pixels, width, height, start_index,
                                 &end_index, length, color );
+         } else {
+            std::cerr << __func__ << ": ERROR: temp_direction[ "
+               << index << " ] (" << temp_direction 
+               << ") is invalid." << std::endl;
+            exit( EXIT_FAILURE );
          }
          start_index = end_index;
-      }
-   }
+      } else {
+         std::cerr << __func__ << "ERROR: getline failed unexpectedly."
+            << "Index is " << index << std::endl;
+         exit( EXIT_FAILURE );
+      } // end of if getline
+   } // end of for loop
+
    std::cout << __func__ << ": done." << std::endl;
    
 }
