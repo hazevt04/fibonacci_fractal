@@ -245,7 +245,7 @@ void FibFractalBuilder::BuildFractalImageData( ) {
          //std::cout << __func__ << ": "
          //   << index << ": " << temp_direction << std::endl;
 
-         ulong color = ( index & 0x00ffffff ) | 0x3;
+         ulong color = ( index & 0xff ) * 0x00010203;
 
          if ( temp_direction == "UP" ) {
             draw_segment_up( pixels, width, height, start_index,

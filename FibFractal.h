@@ -17,7 +17,8 @@ class FibFractal: public Fractal {
             std::string filename = this->input->Getoutput_file( );
             ulong num_iterations = this->input->Getnum_iterations( );
             ulong fib_word_length = this->input->Getfib_word_length( );
-            this->image_data = new ImageData( num_iterations, filename );
+            ulong background_color = this->input->Getbackground_color( );
+            this->image_data = new ImageData( num_iterations, filename, background_color );
          }
       }
 

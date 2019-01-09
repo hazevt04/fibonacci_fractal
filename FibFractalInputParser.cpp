@@ -16,7 +16,7 @@ static struct option long_options[] = {
    { "help", no_argument, NULL, 'h' },
    { "verbose", no_argument, NULL, 'v' },
    { "num_iterations", required_argument, NULL, 'n' },
-   { "color", optional_argument, NULL, 'c' },
+   { "background_color", optional_argument, NULL, 'c' },
    { "output_file", optional_argument, NULL, 'o' },
    { NULL, 0, NULL, 0 }
 };
@@ -26,7 +26,7 @@ void FibFractalInputParser::parseInput( int argc, char* argv[] ) {
    char* pwd = std::getenv( "PWD" );
    
    std::string output_file;
-   unsigned int color = 0;
+   unsigned long background_color = 0;
    unsigned long num_iterations = 1;
    bool verbose = false;
 
@@ -60,8 +60,8 @@ void FibFractalInputParser::parseInput( int argc, char* argv[] ) {
             num_iterations = std::stoul( optarg, 0, 10 );
             break;
          case 'c':
-            color = std::stoul( optarg, 0, 16 );
-            color &= 0xffffff;
+            background_color = std::stoul( optarg, 0, 16 );
+            background_color &= 0xffffff;
             break;
          case 'o': 
             output_file = optarg;
@@ -75,7 +75,7 @@ void FibFractalInputParser::parseInput( int argc, char* argv[] ) {
       ch = getopt_long( argc, argv, "hvn:c:o:", long_options, &option_index );
    } // end of while loop
 
-   this->input = new FibFractalInput( color, num_iterations, output_file, verbose_flag );
+   this->input = new FibFractalInput( background_color, num_iterations, output_file, verbose_flag );
    //this->input->display();
 } // end of FibFractalInputParser() constructor
 
@@ -95,9 +95,9 @@ void FibFractalInputParser::usage( char* name ) {
              << std::setw(4) << "-n" 
              << std::setw(56) << "Number of iterations" << std::endl; 
    
-   std::cout << std::setw(20) << "--color"
+   std::cout << std::setw(20) << "--background_color"
              << std::setw(4) << "-c" 
-             << std::setw(56) << "Color of the Fibonacci Fractal" << std::endl; 
+             << std::setw(56) << "Background Color of the Fibonacci Fractal" << std::endl; 
    
    std::cout << std::setw(20) << "--output_file"
              << std::setw(4) << "-o" 

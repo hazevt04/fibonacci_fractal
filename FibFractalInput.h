@@ -13,14 +13,14 @@ class FibFractalInput: public BaseInput {
       FibFractalInput();
       ~FibFractalInput() { delete [] fib_memo_table; }
 
-      FibFractalInput( ulong color, 
+      FibFractalInput( ulong background_color, 
             ulong num_iterations, 
             std::string output_file,
             bool verbose );
 
       void display();
    
-      ulong Getcolor( ) { return color; }
+      ulong Getbackground_color( ) { return background_color; }
       ulong Getnum_iterations( ) { return num_iterations; }
       std::string Getoutput_file( ) { return output_file; }
       ulong Getfib_word_length( ) { return fib_word_length; }
@@ -29,7 +29,7 @@ class FibFractalInput: public BaseInput {
       ulong* fib_memo_table;
       ulong calcFibMemoized( ulong* table, ulong num );
       
-      ulong color;
+      ulong background_color;
       ulong num_iterations;
       std::string output_file;
       ulong fib_word_length;

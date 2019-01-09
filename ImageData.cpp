@@ -1,6 +1,8 @@
 #include "ImageData.h"
 
-ImageData::ImageData( ulong num_iterations, std::string filename ) {
+ImageData::ImageData( ulong num_iterations,
+      std::string filename, 
+      ulong background_color = 0 ) { 
    ulong height;
    ulong width;
    ulong num_pixels;
@@ -12,19 +14,16 @@ ImageData::ImageData( ulong num_iterations, std::string filename ) {
       height = 8192;
    }
    num_pixels = width * height;
-   const ulong BLACK = 0x00000000;
-   const ulong RED	= 0x00ff0000;
-   const ulong BLUE	= 0x000000ff;
-   const ulong WHITE = 0x00ffffff;	
    
    this->width = width;
    this->height = height;
    this->pixels = new ulong[num_pixels];
    this->num_pixels = num_pixels;
+   this->background_color = background_color;
  
    if ( this->pixels ) {
       for ( ulong index = 0; index < num_pixels; index++ ) {
-         pixels[ index ] = WHITE;
+         pixels[ index ] = background_color;
       }
    }
    this->filename = filename;
@@ -32,7 +31,7 @@ ImageData::ImageData( ulong num_iterations, std::string filename ) {
 }
 
 ImageData::ImageData( ulong width, ulong height, 
-      std::string filename ) {
+      std::string filename, ulong background_color = 0 ) {
    
    ulong num_pixels = width * height;
 
@@ -41,16 +40,11 @@ ImageData::ImageData( ulong width, ulong height,
    this->num_pixels = width * height;
    this->pixels = new ulong[num_pixels];
    this->filename = filename;
+   this->background_color = background_color;
    
-   const ulong BLACK = 0x00000000;
-   const ulong RED	= 0x00ff0000;
-   const ulong BLUE	= 0x000000ff;
-   const ulong WHITE = 0x00ffffff;	
-   
-
    if ( this->pixels ) {
       for ( ulong index = 0; index < num_pixels; index++ ) {
-         this->pixels[ index ] = WHITE;
+         this->pixels[ index ] = background_color;
       }
    }
 }

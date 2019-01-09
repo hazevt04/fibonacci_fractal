@@ -3,12 +3,13 @@
 typedef unsigned long ulong;
 
 FibFractalInput::FibFractalInput( 
-            ulong color, 
+            ulong background_color, 
             ulong num_iterations, 
             std::string output_file,
             bool verbose ) {
       
-   this->color = color;
+   this->background_color = background_color;
+
    this->num_iterations = num_iterations;
    this->output_file = output_file;
    this->verbose = verbose;
@@ -23,10 +24,13 @@ FibFractalInput::FibFractalInput(
 
 void FibFractalInput::display() {
    std::cout << "Verbose Flag is " << (verbose ? "true" : "false") << std::endl;
-   std::cout << "Color is 0x" << std::hex << color << std::dec << std::endl;
-   std::cout << "Number of iterations is " << num_iterations << std::endl;
+   std::cout << "Background Color is 0x" << std::hex 
+      << background_color << std::dec << std::endl;
+   std::cout << "Number of iterations is " << num_iterations 
+      << std::endl;
    std::cout << "Output File name is " << output_file << std::endl;
-   std::cout << "Fibonacci Word Length will be " << fib_word_length << std::endl;
+   std::cout << "Fibonacci Word Length will be " 
+      << fib_word_length << std::endl;
 }
 
 ulong FibFractalInput::calcFibMemoized( ulong* table, ulong num ) {
@@ -47,3 +51,4 @@ ulong FibFractalInput::calcFibMemoized( ulong* table, ulong num ) {
       } // end of else if table[num] == 0
    } // end of else num >= 2
 }
+
