@@ -12,8 +12,8 @@
 
 typedef unsigned long ulong;
 
-PNGRenderer::PNGRenderer( ImageData* data ) {
-   this->data = data;
+PNGRenderer::PNGRenderer( ImageData* image_data ) {
+   this->image_data = image_data;
    
    this->png_ptr = NULL;
    this->info_ptr = NULL;
@@ -31,7 +31,8 @@ void PNGRenderer::set_rgb( png_byte* ptr, ulong val ) {
    ptr[ 2 ] = ( val ) & 0xFFUL;
 }
 
-int PNGRenderer::write_png( char* filename, int width, int height, ulong* buffer, char* title ) {
+int PNGRenderer::write_png( char* filename, int width, 
+      int height, ulong* buffer, char* title ) {
 
    int code            = 0;
 
@@ -43,7 +44,8 @@ int PNGRenderer::write_png( char* filename, int width, int height, ulong* buffer
    }
 
    // Initialize write structure
-   png_ptr = png_create_write_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL );
+   png_ptr = png_create_write_struct( PNG_LIBPNG_VER_STRING, 
+         NULL, NULL, NULL );
    if ( png_ptr == NULL ) {
       fprintf( stderr, "Could not allocate write struct\n" );
       return 1;
@@ -65,15 +67,16 @@ int PNGRenderer::write_png( char* filename, int width, int height, ulong* buffer
    png_init_io( png_ptr, fp );
 
    // Write header (8 bit colour depth)
-   png_set_IHDR( png_ptr, info_ptr, width, height, 8, PNG_COLOR_TYPE_RGB,
-                 PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE,
-                 PNG_FILTER_TYPE_BASE );
+   png_set_IHDR( png_ptr, info_ptr, width, height, 8, 
+         PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, 
+         PNG_COMPRESSION_TYPE_BASE,
+         PNG_FILTER_TYPE_BASE );
 
       // Set title
    if ( title != NULL ) {
       png_text title_text;
       title_text.compression = PNG_TEXT_COMPRESSION_NONE;
-      strcpy( title_text.key, "Title" );
+      title_text.key         = "Title";
       title_text.text        = title;
       png_set_text( png_ptr, info_ptr, &title_text, 1 );
    }
@@ -99,8 +102,9 @@ int PNGRenderer::write_png( char* filename, int width, int height, ulong* buffer
 }
 
 PNGRenderer::~PNGRenderer() {
-   if ( fp != NULL )
-      fclose( fp );
+   //if ( fp != NULL )
+      //if 
+      //fclose( fp );
    if ( info_ptr != NULL )
       png_free_data( png_ptr, info_ptr, PNG_FREE_ALL, -1 );
    if ( png_ptr != NULL )
@@ -110,16 +114,18 @@ PNGRenderer::~PNGRenderer() {
 }
 
 void PNGRenderer::doRender() {
-   ImageData* idata = this->data;
-   int width = (int)idata->width;
-   int height = (int)idata->height;
-   std::string filename = idata->filename;
+   ImageData* image_data = this->image_data;
+   ulong* pixels = image_data->Getpixels( );
+   int width = (int)image_data->Getwidth( );
+   int height = (int)image_data->Getheight( );
+   std::string filename = image_data->Getfilename( );
    char fname[100];
    strcpy( fname, filename.c_str() );
    
-   int result = write_png( fname, width, height, idata->getPixels(), fname ); 
+   int result = write_png( fname, width, height, pixels, fname ); 
    if ( result ) {
-      fprintf( stderr, "Exiting due to error in rendering PNG file." );
+      fprintf( stderr, 
+            "Exiting due to error in rendering PNG file." );
       exit(EXIT_FAILURE);
    }
    

@@ -8,9 +8,9 @@
 #include "FibFractalBuilder.h"
 
 FibFractalBuilder::FibFractalBuilder( BaseInput* input ) {
-   std::cout << __func__ << ": "<< std::endl;
+   //std::cout << __func__ << ": "<< std::endl;
    
-   input->display();
+   //input->display();
 
    this->input = dynamic_cast<FibFractalInput* >(input);
    if ( this->input == NULL ) {
@@ -32,7 +32,7 @@ void FibFractalBuilder::BuildFractal( ) {
 }
 
 void FibFractalBuilder::BuildFractalWord( ) {
-   std::cout << "Building fractal word" << std::endl;
+   //std::cout << "Building fractal word" << std::endl;
    const ulong num_iterations = input->Getnum_iterations();
    const ulong fib_word_length = input->Getfib_word_length();
    std::string t_fib_words[ num_iterations ];
@@ -51,13 +51,14 @@ void FibFractalBuilder::BuildFractalWord( ) {
       this->fractal->Setfib_word( "1" ); 
    }
 
-   std::cout << "Fibonacci Word is " << this->fractal->Getfib_word( ) 
-      << std::endl;
+   //std::cout << "Fibonacci Word is " 
+   //   << this->fractal->Getfib_word( ) 
+   //   << std::endl;
 }
 
 
 void FibFractalBuilder::BuildFractalDirections( ) {
-   std::cout << "Building fractal directions strings" << std::endl;
+   //std::cout << "Building fractal directions strings" << std::endl;
 
    const ulong fib_word_length = input->Getfib_word_length( );
    const std::string fib_word = this->fractal->Getfib_word( );
@@ -88,8 +89,8 @@ void FibFractalBuilder::BuildFractalDirections( ) {
       fib_directions += segment_directions[ index ];
       fib_directions += " ";
    }
-   std::cout << __func__ << ": fib_directions = " 
-      << fib_directions << std::endl;
+   //std::cout << __func__ << ": fib_directions = " 
+   //   << fib_directions << std::endl;
 
    this->fractal->Setfib_directions( fib_directions );
 }
@@ -222,7 +223,7 @@ void FibFractalBuilder::draw_segment_down( ulong* pixels, ulong width,
 }
 
 void FibFractalBuilder::BuildFractalImageData( ) {
-   std::cout << __func__ << ": started." << std::endl;
+   //std::cout << __func__ << ": started." << std::endl;
 
    ImageData* image_data = this->fractal->Getimage_data( );
    ulong* pixels = image_data->Getpixels( );
@@ -241,8 +242,8 @@ void FibFractalBuilder::BuildFractalImageData( ) {
    for ( ulong index = 0; index < fib_word_length; index++ ) {
 
       if ( std::getline( isstream, temp_direction, ' ' ) ) {
-         std::cout << __func__ << ": "
-            << index << ": " << temp_direction << std::endl;
+         //std::cout << __func__ << ": "
+         //   << index << ": " << temp_direction << std::endl;
 
          ulong color = ( index & 0x00ffffff ) | 0x3;
 
@@ -266,12 +267,14 @@ void FibFractalBuilder::BuildFractalImageData( ) {
          }
          start_index = end_index;
       } else {
-         std::cerr << __func__ << "ERROR: getline failed unexpectedly."
+         std::cerr << __func__ 
+            << "ERROR: getline failed unexpectedly."
             << "Index is " << index << std::endl;
          exit( EXIT_FAILURE );
       } // end of if getline
    } // end of for loop
 
-   std::cout << __func__ << ": done." << std::endl;
+   image_data->Setpixels( pixels );
    
+   //std::cout << __func__ << ": done." << std::endl;
 }

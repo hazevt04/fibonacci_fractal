@@ -29,19 +29,13 @@ class FibFractal: public Fractal {
          this->fib_directions = fib_directions;
       }
 
-      void Setimage_data( ImageData* image_data ) {
-         this->image_data = image_data;
-      }
-
       std::string Getfib_word( ) { return fib_word; }
       std::string Getfib_directions( ) { return fib_directions; }
-      ImageData* Getimage_data( ) { return image_data; }
    private:
       // binary string
       std::string fib_word;
       // string with directions based on the fib_word
       std::string fib_directions;
-      ImageData* image_data;
    
       FibFractalInput* input;
 

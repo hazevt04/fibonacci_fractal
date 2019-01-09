@@ -31,7 +31,8 @@ ImageData::ImageData( ulong num_iterations, std::string filename ) {
 
 }
 
-ImageData::ImageData( ulong width, ulong height, std::string filename ) {
+ImageData::ImageData( ulong width, ulong height, 
+      std::string filename ) {
    
    ulong num_pixels = width * height;
 

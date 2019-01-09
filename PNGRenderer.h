@@ -14,8 +14,8 @@ typedef unsigned long ulong;
 class PNGRenderer : public Renderer {
    public:
       PNGRenderer() { };
-      PNGRenderer( ImageData* data );
-      ~PNGRenderer();
+      PNGRenderer( ImageData* image_data );
+      ~PNGRenderer( );
       void doRender(); 
       void set_rgb( png_byte* ptr, ulong val );
       int write_png( char* filename, int width, 
