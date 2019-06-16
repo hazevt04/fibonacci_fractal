@@ -483,7 +483,7 @@ void usage( char* argv ) {
       "--color", "-c", 
       "Color of the Fibonacci fractal\n" );  
    printf( "%20s%4s%56s", 
-      "--output_file", "-n", 
+      "--output_file", "-o", 
       "path to the output PNG file for the fractal\n" );  
 #ifdef TESTING
    printf( "%20s%4s%56s", 
