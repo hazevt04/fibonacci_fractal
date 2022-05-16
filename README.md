@@ -44,3 +44,7 @@ make install
 ```bash
 find . -iname *.h -o -iname *.c -o -iname *.hpp -o -iname *.cpp | xargs -clang-format -style=file -fallback-style=none -i 
 ```
+
+# Note About the Viewing Resulting Image
+The fibonacci fractal starts at the bottom left corner of the image. You might have to scroll your image viewer
+and zoom in to see the result.
