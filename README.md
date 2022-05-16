@@ -22,7 +22,7 @@ Options one of:
               --help  -h                                 Show this usage message
     --num_iterations  -n                                    Number of iterations
   --background_color  -c               Background Color of the Fibonacci Fractal
-                                       (6 RGB hex chars, ex: 0xffffff for white)
+                                       (6 RGB hex chars, ex: ffffff for white)
        --output_file  -o             Path to the output file for the fractal PNG
 ```
 
