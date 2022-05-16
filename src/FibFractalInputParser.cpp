@@ -99,7 +99,7 @@ void FibFractalInputParser::usage( char* name ) {
              << std::setw(4) << "-c" 
              << std::setw(56) << "Background Color of the Fibonacci Fractal" << "\n";
 
-   std::cout << std::setw(80) << "(6 RGB hex chars, ex: 0xffffff for white)" << "\n"; 
+   std::cout << std::setw(80) << "(6 RGB hex chars, ex: ffffff for white)" << "\n"; 
    
    std::cout << std::setw(20) << "--output_file"
              << std::setw(4) << "-o" 
