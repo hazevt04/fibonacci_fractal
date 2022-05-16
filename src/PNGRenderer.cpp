@@ -1,6 +1,7 @@
 
 #include <iostream>
-#include <string>
+//#include <string>
+#include <cstring>
 #include <stdio.h>
 
 #include "ImageData.h"

@@ -81,23 +81,25 @@ void FibFractalInputParser::parseInput( int argc, char* argv[] ) {
 
 
 void FibFractalInputParser::usage( char* name ) {
-   std::cout << "Usage " << name << " <options>" << std::endl;
-   std::cout << "Options one of: " << std::endl;
+   std::cout << "Usage " << name << " <options>" << "\n";
+   std::cout << "Options one of: " << "\n";
    std::cout << std::setw(20) << "--verbose"
              << std::setw(4) << "-v" 
-             << std::setw(56) << "Verbose output" << std::endl; 
+             << std::setw(56) << "Verbose output" << "\n"; 
    
    std::cout << std::setw(20) << "--help"
              << std::setw(4) << "-h" 
-             << std::setw(56) << "Show this usage message" << std::endl; 
+             << std::setw(56) << "Show this usage message" << "\n"; 
    
    std::cout << std::setw(20) << "--num_iterations"
              << std::setw(4) << "-n" 
-             << std::setw(56) << "Number of iterations" << std::endl; 
+             << std::setw(56) << "Number of iterations" << "\n"; 
    
    std::cout << std::setw(20) << "--background_color"
              << std::setw(4) << "-c" 
-             << std::setw(56) << "Background Color of the Fibonacci Fractal" << std::endl; 
+             << std::setw(56) << "Background Color of the Fibonacci Fractal" << "\n";
+
+   std::cout << std::setw(80) << "(6 RGB hex chars, ex: 0xffffff for white)" << "\n"; 
    
    std::cout << std::setw(20) << "--output_file"
              << std::setw(4) << "-o" 
