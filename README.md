@@ -1,5 +1,5 @@
 # fibonacci\_fractal
-======================================
+
 # Description
 Generates an image of a fibonacci fractal based on a fibonacci word, which is a binary string (ex: 10010101)
 The Fibonacci word may be represented as a fractal as described here:
